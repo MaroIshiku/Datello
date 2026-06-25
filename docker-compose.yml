@@ -1,11 +1,11 @@
-name: ish-contact
+name: datello
 
 services:
-  ish-contact:
-    image: ghcr.io/maroishiku/ish-contact:latest
+  datello:
+    image: ghcr.io/maroishiku/datello:latest
     pull_policy: always
-    container_name: ish-contact
-    hostname: ish-contact
+    container_name: datello
+    hostname: datello
     restart: unless-stopped
     init: true
     user: "10001:10001"
@@ -26,7 +26,7 @@ services:
 
     volumes:
       - type: bind
-        source: ${ISH_CONTACT_DATA_PATH:-/DATA/AppData/ish-contact/data}
+        source: ${DATELLO_DATA_PATH:-${ISH_CONTACT_DATA_PATH:-/DATA/AppData/datello/data}}
         target: /data
 
     read_only: true
@@ -54,24 +54,24 @@ services:
         max-file: "3"
 
     networks:
-      - ish-contact
+      - datello
 
     labels:
       org.opencontainers.image.title: "Datello"
       org.opencontainers.image.description: "Private encrypted contact and payment QR vault with local QR generation."
-      org.opencontainers.image.source: "https://github.com/MaroIshiku/ish-contact"
-      org.opencontainers.image.url: "https://github.com/MaroIshiku/ish-contact"
+      org.opencontainers.image.source: "https://github.com/MaroIshiku/Datello"
+      org.opencontainers.image.url: "https://github.com/MaroIshiku/Datello"
 
 networks:
-  ish-contact:
-    name: ish-contact
+  datello:
+    name: datello
     driver: bridge
 
 x-casaos:
   architectures:
     - amd64
     - arm64
-  main: ish-contact
+  main: datello
   author: MaroIshiku
   developer: MaroIshiku
   category: Utilities
@@ -84,8 +84,8 @@ x-casaos:
   description:
     en_us: Mobile-first PWA for an encrypted digital contact card. The server stores only the encrypted token; QR codes and encryption run locally in the browser.
     de_de: Mobile-first PWA fuer eine verschluesselte digitale Visitenkarte. Der Server speichert nur den verschluesselten Token; QR-Codes und Verschluesselung laufen lokal im Browser.
-  icon: https://raw.githubusercontent.com/MaroIshiku/ish-contact/main/assets/icon-512.png
-  thumbnail: https://raw.githubusercontent.com/MaroIshiku/ish-contact/main/assets/icon-512.png
+  icon: https://raw.githubusercontent.com/MaroIshiku/Datello/main/assets/datello-icon-512-20260626.png
+  thumbnail: https://raw.githubusercontent.com/MaroIshiku/Datello/main/assets/datello-icon-512-20260626.png
   index: /
   port_map: ${WEBUI_PORT:-8080}
   tips:
@@ -93,12 +93,12 @@ x-casaos:
       en_us: |
         Required: set DV2_SHARED_SECRET to a long random value before starting.
 
-        Persistent data is stored on the ZimaOS host at /DATA/AppData/ish-contact/data and mounted into the container at /data. The directory must be writable by UID/GID 10001.
+        Persistent data is stored on the ZimaOS host at /DATA/AppData/datello/data and mounted into the container at /data. The directory must be writable by UID/GID 10001.
 
         Publish the WebUI through HTTPS if you want full PWA, Web Crypto, Service Worker and Passkey support.
       de_de: |
         Pflicht: Setze DV2_SHARED_SECRET vor dem Start auf einen langen zufaelligen Wert.
 
-        Persistente Daten liegen auf dem ZimaOS-Host unter /DATA/AppData/ish-contact/data und werden im Container nach /data gemountet. Das Verzeichnis muss fuer UID/GID 10001 schreibbar sein.
+        Persistente Daten liegen auf dem ZimaOS-Host unter /DATA/AppData/datello/data und werden im Container nach /data gemountet. Das Verzeichnis muss fuer UID/GID 10001 schreibbar sein.
 
         Veroeffentliche die WebUI ueber HTTPS, wenn PWA, Web Crypto, Service Worker und Passkeys vollstaendig funktionieren sollen.

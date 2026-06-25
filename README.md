@@ -26,8 +26,8 @@ Mobile-first PWA fuer private und geschaeftliche Kontaktdaten mit PayPal- und SE
 1. Repository klonen:
 
 ```bash
-git clone git@github.com:MaroIshiku/ish-contact.git
-cd ish-contact
+git clone git@github.com:MaroIshiku/Datello.git
+cd Datello
 ```
 
 2. `.env` anlegen:
@@ -42,15 +42,15 @@ cp .env.example .env
 WEBUI_PORT=8080
 TZ=Europe/Berlin
 DV2_ACCESS_LOG=false
-ISH_CONTACT_DATA_PATH=/DATA/AppData/ish-contact/data
+DATELLO_DATA_PATH=/DATA/AppData/datello/data
 DV2_SHARED_SECRET=ein-langes-zufaelliges-secret
 ```
 
 4. Datenordner auf dem ZimaOS-Host anlegen:
 
 ```bash
-mkdir -p /DATA/AppData/ish-contact/data
-chown -R 10001:10001 /DATA/AppData/ish-contact/data
+mkdir -p /DATA/AppData/datello/data
+chown -R 10001:10001 /DATA/AppData/datello/data
 ```
 
 5. Fertiges GHCR-Image ziehen und Container starten:
@@ -62,15 +62,15 @@ docker compose up -d
 
 6. In ZimaOS/Reverse Proxy die App per HTTPS veroeffentlichen. HTTPS ist wichtig fuer Web Crypto, Service Worker, Wake Lock und Passkeys.
 
-7. Beim ersten Setup in der App dasselbe `DV2_SHARED_SECRET` als Server-Secret eintragen. Danach wird der verschluesselte Token auf dem Host unter `/DATA/AppData/ish-contact/data/data.json` gespeichert.
+7. Beim ersten Setup in der App dasselbe `DV2_SHARED_SECRET` als Server-Secret eintragen. Danach wird der verschluesselte Token auf dem Host unter `/DATA/AppData/datello/data/data.json` gespeichert.
 
 ## ZimaOS Compose-Hinweise
 
-- `docker-compose.yml` nutzt direkt `ghcr.io/maroishiku/ish-contact:latest`; ZimaOS muss nicht lokal bauen.
+- `docker-compose.yml` nutzt direkt `ghcr.io/maroishiku/datello:latest`; ZimaOS muss nicht lokal bauen.
 - `WEBUI_PORT` steuert den veroeffentlichten WebUI-Port und ist auf `8080` voreingestellt.
 - Der Container laeuft read-only. Schreibbar sind nur `/data` und ein kleines `/tmp`-Tmpfs.
-- Persistente Daten liegen bewusst als Bind-Mount unter `/DATA/AppData/ish-contact/data`, passend zur ZimaOS-AppData-Struktur.
-- Fuer lokale Windows-Docker-Desktop-Tests kann `ISH_CONTACT_DATA_PATH=./data` gesetzt werden.
+- Persistente Daten liegen bewusst als Bind-Mount unter `/DATA/AppData/datello/data`, passend zur ZimaOS-AppData-Struktur.
+- Fuer lokale Windows-Docker-Desktop-Tests kann `DATELLO_DATA_PATH=./data` gesetzt werden.
 - Der Datenordner muss fuer UID/GID `10001:10001` schreibbar sein, weil der Container nicht als root laeuft.
 - `DV2_SHARED_SECRET` ist Pflicht. Ohne diesen Wert startet Compose nicht.
 
@@ -107,7 +107,7 @@ Dann `http://127.0.0.1:8080` oeffnen. Fuer echte Nutzung bitte HTTPS verwenden.
 Das Docker-Image wird per GitHub Actions nach GHCR veroeffentlicht:
 
 ```text
-ghcr.io/maroishiku/ish-contact:latest
+ghcr.io/maroishiku/datello:latest
 ```
 
 `docker-compose.yml` nutzt dieses Image direkt. Ein lokaler Build auf ZimaOS ist nicht noetig.

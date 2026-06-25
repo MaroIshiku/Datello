@@ -8,7 +8,7 @@ Stand: 2026-06-20
 - Clientseitige Verschluesselung bleibt vollstaendig im Browser.
 - Dockerfile und `docker-compose.yml` fuer ZimaOS/Reverse-Proxy-Betrieb vorhanden.
 - ZimaOS-Compose nutzt GHCR-Image statt lokalem Build.
-- Persistenz erfolgt ueber Bind-Mount `/DATA/AppData/ish-contact/data:/data`.
+- Persistenz erfolgt ueber Bind-Mount `/DATA/AppData/datello/data:/data`.
 - `x-casaos`-Metadaten fuer ZimaOS/CasaOS-App-Import vorhanden.
 - App-Icon/Logo ist als SVG und PNG-Favicon eingebunden.
 
