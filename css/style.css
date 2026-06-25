@@ -639,7 +639,7 @@ body {
   }
 }
 
-/* ShareLy lavender login screen */
+/* Datello lavender login screen */
 .auth-footnote {
   display: none;
 }
@@ -891,7 +891,7 @@ body[data-auth-mode="login"] .auth-footnote span {
   }
 }
 
-/* ShareLy Material 3 mobile pass */
+/* Datello Material 3 mobile pass */
 :root {
   --color-primary: #6F55C8;
   --color-on-primary: #ffffff;
@@ -1056,6 +1056,25 @@ body {
   font-weight: 850;
 }
 
+.brand-text {
+  display: grid;
+  gap: 1px;
+  line-height: 1;
+}
+
+.brand-text b {
+  font: inherit;
+  line-height: .98;
+}
+
+.brand-text small {
+  color: var(--color-on-surface-muted);
+  font-size: .55em;
+  font-weight: 760;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
 .login-logo {
   width: 72px;
   height: 72px;
@@ -1104,9 +1123,13 @@ body {
   align-items: center;
   min-width: 0;
   gap: 10px;
-  font-size: 1.24rem;
+  font-size: 1.18rem;
   font-weight: 860;
   color: var(--color-on-surface);
+}
+
+.brand-lockup .brand-text small {
+  font-size: .52em;
 }
 
 .brand-lockup img {

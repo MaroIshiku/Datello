@@ -1,9 +1,9 @@
 {
-  "name": "ShareLy",
-  "short_name": "ShareLy",
-  "id": "./index.html?v=sharely-ui-20260626",
-  "description": "Lokaler, sicherer Kontakt- und Zahlungs-QR-Tresor.",
-  "start_url": "./index.html?v=sharely-ui-20260626",
+  "name": "Datello",
+  "short_name": "Datello",
+  "id": "./index.html?v=datello-20260626",
+  "description": "Profile Share für lokale Kontakt- und Zahlungs-QRs.",
+  "start_url": "./index.html?v=datello-20260626",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -11,18 +11,18 @@
   "theme_color": "#6F55C8",
   "icons": [
     {
-      "src": "assets/sharely-favicon-20260626.png",
+      "src": "assets/datello-favicon-20260626.png",
       "sizes": "64x64",
       "type": "image/png"
     },
     {
-      "src": "assets/sharely-icon-192-20260626.png",
+      "src": "assets/datello-icon-192-20260626.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "assets/sharely-icon-512-20260626.png",
+      "src": "assets/datello-icon-512-20260626.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

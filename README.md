@@ -1,4 +1,6 @@
-# ShareLy
+# Datello
+
+Profile Share
 
 Mobile-first PWA fuer private und geschaeftliche Kontaktdaten mit PayPal- und SEPA/EPC-Zahlungs-QRs. Die App laeuft als schlanker Python-Webserver im Docker-Container, ist fuer ZimaOS geeignet und bleibt sicherheitsseitig clientseitig verschluesselt: Der Server speichert nur den AES-GCM-Token und sieht nie Klartextdaten.
 

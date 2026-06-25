@@ -16,7 +16,7 @@ services:
       TZ: ${TZ:-Europe/Berlin}
       DV2_PORT: "8080"
       DV2_DATA_FILE: /data/data.json
-      DV2_SHARED_SECRET: ${DV2_SHARED_SECRET:?Set DV2_SHARED_SECRET before starting ShareLy}
+      DV2_SHARED_SECRET: ${DV2_SHARED_SECRET:?Set DV2_SHARED_SECRET before starting Datello}
       DV2_ACCESS_LOG: ${DV2_ACCESS_LOG:-false}
 
     ports:
@@ -57,7 +57,7 @@ services:
       - ish-contact
 
     labels:
-      org.opencontainers.image.title: "ShareLy"
+      org.opencontainers.image.title: "Datello"
       org.opencontainers.image.description: "Private encrypted contact and payment QR vault with local QR generation."
       org.opencontainers.image.source: "https://github.com/MaroIshiku/ish-contact"
       org.opencontainers.image.url: "https://github.com/MaroIshiku/ish-contact"
@@ -76,8 +76,8 @@ x-casaos:
   developer: MaroIshiku
   category: Utilities
   title:
-    en_us: ShareLy
-    de_de: ShareLy
+    en_us: Datello
+    de_de: Datello
   tagline:
     en_us: Private encrypted contact and payment QR vault.
     de_de: Privater verschluesselter Kontakt- und Zahlungs-QR-Tresor.

@@ -44,7 +44,7 @@ export const Store = {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `sharely-token-${new Date().toISOString().slice(0,10)}.json`;
+    a.download = `datello-token-${new Date().toISOString().slice(0,10)}.json`;
     document.body.append(a);
     a.click();
     a.remove();

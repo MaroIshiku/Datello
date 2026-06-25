@@ -1,7 +1,7 @@
-import { Auth } from './auth.js?v=sharely-ui-20260626';
-import { decryptJson, encryptJson } from './crypto.js?v=sharely-ui-20260626';
-import { formatIban, formatIbanRaw, normalizeAmount, QrPayload, renderQr } from './qr.js?v=sharely-ui-20260626';
-import { Store } from './store.js?v=sharely-ui-20260626';
+import { Auth } from './auth.js?v=datello-20260626';
+import { decryptJson, encryptJson } from './crypto.js?v=datello-20260626';
+import { formatIban, formatIbanRaw, normalizeAmount, QrPayload, renderQr } from './qr.js?v=datello-20260626';
+import { Store } from './store.js?v=datello-20260626';
 
 const FIELDS = [
   ['n', 'Vollständiger Name', 'text', true], ['m', 'Privat-Handy', 'tel'], ['e1', 'Privat-E-Mail', 'email'],
@@ -19,8 +19,8 @@ const PROFILE_STEPS = [
   { id: 'bank', title: 'Bank', hint: 'SEPA-Daten für GiroCode / EPC-QR.', fields: ['ib', 'bic'] }
 ];
 const AMOUNTS = ['5', '10', '20', '50', '100'];
-const THEME_KEY = 'sharely-theme';
-const MODE_KEY = 'sharely-mode';
+const THEME_KEY = 'datello-theme';
+const MODE_KEY = 'datello-mode';
 const LEGACY_THEME_KEY = 'dv2.theme';
 const LEGACY_MODE_KEY = 'dv2.mode';
 const THEMES = ['lavendel', 'mint', 'sky', 'amber', 'graphit'];
@@ -332,7 +332,7 @@ function companyRows() {
 async function shareCurrentTab() {
   const text = buildShareText();
   try {
-    if (navigator.share) await navigator.share({ title: 'ShareLy', text });
+    if (navigator.share) await navigator.share({ title: 'Datello', text });
     else await copyText(text);
   } catch (error) { if (error.name !== 'AbortError') toast(error.message); }
 }
@@ -357,7 +357,7 @@ function openSettings() {
   const avatarNode = avatar
     ? `<img src="${esc(avatar)}" alt="">`
     : `<span>${esc(initials(state.data?.n))}</span>`;
-  openSheet('ShareLy', `
+  openSheet('Datello', `
     <button class="profile-close" type="button" data-close-sheet aria-label="Menü schließen">×</button>
     <div class="profile-menu-content">
       <section class="profile-card">
@@ -366,7 +366,7 @@ function openSettings() {
           <span class="avatar-camera" aria-hidden="true">📷</span>
         </button>
         <div class="profile-card-main">
-          <h3>${esc(state.data?.n || 'ShareLy Profil')}</h3>
+          <h3>${esc(state.data?.n || 'Datello Profil')}</h3>
           <p>${esc(state.data?.e1 || state.data?.ce || 'Lokaler Kontakt- & Zahlungs-Tresor')}</p>
         </div>
         <input id="avatarFile" type="file" accept="image/*" hidden>
@@ -774,7 +774,7 @@ function applyTheme() {
   localStorage.setItem(THEME_KEY, document.body.dataset.theme);
   localStorage.setItem(MODE_KEY, document.body.dataset.mode);
 }
-function initials(name = '') { return name.split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || 'SL'; }
+function initials(name = '') { return name.split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || 'DT'; }
 function formatDate(value) { try { return new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)); } catch { return value; } }
 function normalizeUrl(url) { return /^https?:\/\//i.test(url) ? url : `https://${url}`; }
 function labelTheme(t) { return ({ lavendel: 'Lavendel', mint: 'Mint', sky: 'Sky', amber: 'Amber', graphit: 'Graphit' })[t] || t; }
