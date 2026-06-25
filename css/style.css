@@ -916,7 +916,7 @@ body[data-auth-mode="login"] .auth-footnote span {
   --space-6: 24px;
   --duration-normal: 220ms;
   --ease-standard: cubic-bezier(.2, 0, 0, 1);
-  --qr-size: clamp(112px, 32vw, 126px);
+  --qr-size: clamp(128px, 34vw, 144px);
   --primary: var(--color-primary);
   --on-primary: var(--color-on-primary);
   --primary-container: var(--color-primary-container);
@@ -1327,10 +1327,11 @@ body {
 .qr-canvas {
   width: var(--qr-size) !important;
   height: var(--qr-size) !important;
-  padding: 7px;
-  border-radius: 20px;
-  background: transparent;
+  padding: 4px;
+  border-radius: 18px;
+  background: #fff;
   filter: none;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / .04);
 }
 
 .qr-caption {
@@ -1693,7 +1694,7 @@ body {
 
 @media (max-width: 380px) {
   :root {
-    --qr-size: clamp(92px, 28vw, 112px);
+    --qr-size: clamp(120px, 34vw, 132px);
   }
 
   .content-card {
@@ -1712,7 +1713,7 @@ body {
 
 @media (max-height: 820px) and (max-width: 430px) {
   :root {
-    --qr-size: clamp(88px, 27vw, 112px);
+    --qr-size: clamp(116px, 32vw, 128px);
   }
 
   .hero.top-app-bar {
@@ -1772,8 +1773,8 @@ body {
 
   .qr-card.qr-share-card,
   .content-card.has-qr .qr-card.qr-share-card {
-    height: 152px;
-    min-height: 152px !important;
+    height: 172px;
+    min-height: 172px !important;
     padding: 8px;
     border-radius: 22px;
   }
@@ -1820,7 +1821,7 @@ body {
 
   .qr-card.qr-share-card,
   .content-card.has-qr .qr-card.qr-share-card {
-    height: 152px;
-    min-height: 152px !important;
+    height: 172px;
+    min-height: 172px !important;
   }
 }

@@ -1,9 +1,9 @@
 {
   "name": "Datello",
   "short_name": "Datello",
-  "id": "./index.html?v=datello-20260626",
+  "id": "./index.html?v=datello-qr-safe-20260626",
   "description": "Profile Share für lokale Kontakt- und Zahlungs-QRs.",
-  "start_url": "./index.html?v=datello-20260626",
+  "start_url": "./index.html?v=datello-qr-safe-20260626",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

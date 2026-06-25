@@ -277,7 +277,7 @@ export function renderQr(target, text, options = {}) {
   canvas.width = size; canvas.height = size;
   canvas.className = options.className || 'qr-canvas';
   const ctx = canvas.getContext('2d');
-  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingEnabled = options.style !== 'classic';
   ctx.imageSmoothingQuality = 'high';
   if (options.light) {
     ctx.fillStyle = options.light;
@@ -312,7 +312,7 @@ function renderStyledModules(ctx, modules, cell, border, palette) {
   }
 
   const n = modules.length;
-  const radius = cell * (palette.dense ? 0.34 : 0.37);
+  const radius = cell * (palette.dense ? 0.43 : 0.46);
   const finderZones = [[0, 0], [0, n - 7], [n - 7, 0]];
   for (let r = 0; r < n; r++) {
     for (let c = 0; c < n; c++) {
@@ -331,15 +331,15 @@ function drawFinder(ctx, row, col, cell, border, palette) {
   const y = (row + border) * cell;
   const outer = cell * 7;
   const mid = cell * 5;
-  const inner = cell * 2.25;
+  const inner = cell * 3;
   ctx.fillStyle = palette.dark;
-  circle(ctx, x + outer / 2, y + outer / 2, outer / 2);
+  roundRect(ctx, x, y, outer, outer, cell * 1.15);
   ctx.fill();
   ctx.fillStyle = palette.finderLight;
-  circle(ctx, x + outer / 2, y + outer / 2, mid / 2);
+  roundRect(ctx, x + cell, y + cell, mid, mid, cell * 0.75);
   ctx.fill();
   ctx.fillStyle = palette.dark;
-  circle(ctx, x + outer / 2, y + outer / 2, inner / 2);
+  roundRect(ctx, x + cell * 2, y + cell * 2, inner, inner, cell * 0.55);
   ctx.fill();
 }
 

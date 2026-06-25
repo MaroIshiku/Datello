@@ -1,7 +1,7 @@
-import { Auth } from './auth.js?v=datello-20260626';
-import { decryptJson, encryptJson } from './crypto.js?v=datello-20260626';
-import { formatIban, formatIbanRaw, normalizeAmount, QrPayload, renderQr } from './qr.js?v=datello-20260626';
-import { Store } from './store.js?v=datello-20260626';
+import { Auth } from './auth.js?v=datello-qr-safe-20260626';
+import { decryptJson, encryptJson } from './crypto.js?v=datello-qr-safe-20260626';
+import { formatIban, formatIbanRaw, normalizeAmount, QrPayload, renderQr } from './qr.js?v=datello-qr-safe-20260626';
+import { Store } from './store.js?v=datello-qr-safe-20260626';
 
 const FIELDS = [
   ['n', 'Vollständiger Name', 'text', true], ['m', 'Privat-Handy', 'tel'], ['e1', 'Privat-E-Mail', 'email'],
@@ -677,15 +677,15 @@ function updateAvatar() {
 
 function qrRenderOptions(fullscreen, size) {
   if (fullscreen) {
-    return { size, className: '', light: '#ffffff', finderLight: '#ffffff', dark: '#17201c', accent: '#39406d', border: 5 };
+    return { size, className: '', light: '#ffffff', finderLight: '#ffffff', dark: '#000000', accent: '#000000', border: 6, style: 'classic' };
   }
   return {
     size,
-    light: null,
-    finderLight: cssVar('--surface-container') || '#eef4f0',
-    dark: cssVar('--primary') || '#006b5b',
-    accent: cssVar('--on-surface-variant') || '#3f4945',
-    border: 4
+    light: '#ffffff',
+    finderLight: '#ffffff',
+    dark: '#111111',
+    accent: '#111111',
+    border: 6
   };
 }
 
