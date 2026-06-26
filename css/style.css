@@ -828,6 +828,79 @@ body[data-auth-mode="login"] .quick-unlock {
   margin-top: 18px;
 }
 
+body[data-auth-mode="login"].pin-active .auth-screen {
+  align-items: start;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 14px calc(10px + env(safe-area-inset-bottom, 0px));
+}
+
+body[data-auth-mode="login"].pin-active .auth-card {
+  align-self: start;
+  max-height: calc(100svh - 22px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  overflow: auto;
+  padding: 18px 18px 16px;
+  border-radius: 30px;
+}
+
+body[data-auth-mode="login"].pin-active .login-lockup {
+  margin-bottom: 14px;
+  font-size: 1.55rem;
+}
+
+body[data-auth-mode="login"].pin-active .login-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+}
+
+body[data-auth-mode="login"].pin-active .auth-badge,
+body[data-auth-mode="login"].pin-active #authHint,
+body[data-auth-mode="login"].pin-active .unlock-btn,
+body[data-auth-mode="login"].pin-active .auth-footnote {
+  display: none;
+}
+
+body[data-auth-mode="login"].pin-active .password-shell {
+  min-height: 52px;
+  border-radius: 20px;
+}
+
+body[data-auth-mode="login"].pin-active .password-shell input {
+  min-height: 48px;
+}
+
+body[data-auth-mode="login"].pin-active .quick-unlock {
+  margin-top: 10px;
+}
+
+body[data-auth-mode="login"].pin-active .pin-pad {
+  margin-top: 10px;
+  gap: 8px;
+}
+
+body[data-auth-mode="login"].pin-active .pin-dots {
+  min-height: 12px;
+  gap: 8px;
+}
+
+body[data-auth-mode="login"].pin-active .pin-dots span {
+  width: 10px;
+  height: 10px;
+}
+
+body[data-auth-mode="login"].pin-active .pin-grid {
+  gap: 8px;
+}
+
+body[data-auth-mode="login"].pin-active .pin-grid button {
+  height: clamp(44px, 8.2svh, 54px);
+  border-radius: 18px;
+  font-size: 1.12rem;
+}
+
+body[data-auth-mode="login"].pin-active #pinCancel {
+  min-height: 42px;
+}
+
 .pin-unlock-btn {
   min-height: 58px;
   border-radius: 26px;
@@ -1598,17 +1671,72 @@ body {
   border-bottom: 0;
 }
 
+.debug-info-button {
+  width: 100%;
+  min-height: 46px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: 12px;
+  align-items: center;
+  padding: 9px 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
 .profile-info-card b,
+.debug-info-button b,
 .profile-row-button b {
   color: var(--profile-text);
 }
 
-.profile-info-card span {
+.profile-info-card span,
+.debug-info-button span {
   color: var(--profile-muted);
   text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.debug-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.debug-list {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--outline) 26%, transparent);
+  border-radius: 20px;
+  background: var(--surface-container);
+}
+
+.debug-list div {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.4fr);
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--outline) 18%, transparent);
+}
+
+.debug-list div:last-child {
+  border-bottom: 0;
+}
+
+.debug-list b {
+  color: var(--on-surface);
+  font-size: .82rem;
+}
+
+.debug-list span {
+  color: var(--on-surface-variant);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: .78rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-align: right;
 }
 
 .profile-actions {

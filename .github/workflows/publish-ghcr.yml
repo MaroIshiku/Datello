@@ -4,6 +4,8 @@ on:
   push:
     branches: ["main"]
     tags: ["v*"]
+  schedule:
+    - cron: "0 8 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -16,6 +18,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Write build info
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from datetime import datetime, timezone
+
+          sha = os.environ["GITHUB_SHA"]
+          repo_updated_at = subprocess.check_output(
+              ["git", "show", "-s", "--format=%cI", sha],
+              text=True,
+          ).strip()
+          info = {
+              "app": "Datello",
+              "buildSha": sha,
+              "repoUpdatedAt": repo_updated_at,
+              "builtAt": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+              "sourceRepo": os.environ["GITHUB_REPOSITORY"],
+              "sourceRef": os.environ["GITHUB_REF_NAME"],
+              "workflowRun": os.environ["GITHUB_RUN_ID"],
+              "forkRepos": [],
+          }
+          with open("build-info.json", "w", encoding="utf-8") as handle:
+              json.dump(info, handle, ensure_ascii=False, indent=2)
+              handle.write("\n")
+          PY
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

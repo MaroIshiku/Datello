@@ -1,7 +1,7 @@
-import { Auth } from './auth.js?v=datello-qr-safe-20260626';
-import { decryptJson, encryptJson } from './crypto.js?v=datello-qr-safe-20260626';
-import { formatIban, formatIbanRaw, normalizeAmount, QrPayload, renderQr } from './qr.js?v=datello-qr-safe-20260626';
-import { Store } from './store.js?v=datello-qr-safe-20260626';
+import { Auth } from './auth.js?v=datello-debug-20260626';
+import { decryptJson, encryptJson } from './crypto.js?v=datello-debug-20260626';
+import { formatIban, formatIbanRaw, normalizeAmount, QrPayload, renderQr } from './qr.js?v=datello-debug-20260626';
+import { Store } from './store.js?v=datello-debug-20260626';
 
 const FIELDS = [
   ['n', 'Vollständiger Name', 'text', true], ['m', 'Privat-Handy', 'tel'], ['e1', 'Privat-E-Mail', 'email'],
@@ -28,7 +28,7 @@ const MODES = ['auto', 'light', 'dark'];
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-const state = { token: '', updated: null, data: null, masterPassword: '', activeTab: 'privat', amount: sessionStorage.getItem('dv2.amount') || '', purpose: sessionStorage.getItem('dv2.purpose') || '', wakeLock: null };
+const state = { token: '', updated: null, data: null, masterPassword: '', activeTab: 'privat', amount: sessionStorage.getItem('dv2.amount') || '', purpose: sessionStorage.getItem('dv2.purpose') || '', wakeLock: null, buildInfo: null };
 
 init();
 
@@ -39,6 +39,7 @@ async function init() {
   bindAuth();
   bindGlobal();
   registerServiceWorker();
+  state.buildInfo = await loadBuildInfo();
   const loaded = await Store.loadData();
   state.token = loaded.token;
   state.updated = loaded.updated;
@@ -120,6 +121,7 @@ function bindGlobal() {
 }
 
 function showSetup(offlineError) {
+  document.body.classList.remove('pin-active');
   document.body.dataset.authMode = 'setup';
   $('#authScreen').classList.remove('hidden');
   $('#vaultScreen').classList.add('hidden');
@@ -131,6 +133,7 @@ function showSetup(offlineError) {
 }
 
 function showLogin() {
+  document.body.classList.remove('pin-active');
   document.body.dataset.authMode = 'login';
   $('#authScreen').classList.remove('hidden');
   $('#vaultScreen').classList.add('hidden');
@@ -374,7 +377,7 @@ function openSettings() {
 
       <section class="profile-info-card" aria-label="Tresorstatus">
         <div><b>Tresor</b><span>Ende-zu-Ende verschlüsselt</span></div>
-        <div><b>Aktualisiert</b><span>${state.updated ? esc(formatDate(state.updated)) : 'Noch nicht gespeichert'}</span></div>
+        <button class="debug-info-button" data-action="debug" type="button"><b>Debug</b><span>Build- und Repo-Informationen</span></button>
       </section>
 
       <div class="profile-actions">
@@ -430,6 +433,7 @@ async function settingsClick(e) {
   if (action === 'avatar-pick') { $('#avatarFile')?.click(); return; }
   if (action === 'password') openPasswordSheet();
   if (action === 'pin') openPinSetup(false);
+  if (action === 'debug') openDebugInfo();
   if (action === 'passkey') setupPasskey();
   if (action === 'export') { Store.exportToken({ token: state.token, updated: state.updated }); toast('Export gestartet.'); }
   if (action === 'lock') location.reload();
@@ -452,6 +456,32 @@ async function settingsChange(e) {
     state.token = saved.token; state.updated = saved.updated;
     closeSheet(); showLogin(); toast('Token importiert. Bitte entsperren.');
   } catch (error) { toast(error.message); }
+}
+
+function openDebugInfo() {
+  const info = state.buildInfo || {};
+  const forkRepos = Array.isArray(info.forkRepos) ? info.forkRepos : [];
+  const rows = [
+    ['App', info.app || 'Datello'],
+    ['Build-SHA', shortSha(info.buildSha)],
+    ['Voller SHA', info.buildSha || 'local'],
+    ['Repo aktualisiert', formatDebugDate(info.repoUpdatedAt)],
+    ['Image gebaut', formatDebugDate(info.builtAt)],
+    ['Quelle', info.sourceRepo || 'MaroIshiku/Datello'],
+    ['Ref', info.sourceRef || 'local'],
+    ['Workflow-Run', info.workflowRun || 'local'],
+    ['Fork-Repositories', forkRepos.length ? `${forkRepos.length} eingebunden` : 'Keine eingebunden']
+  ];
+  openSheet('Debug-Informationen', `
+    <div class="debug-panel">
+      <p class="muted">Technische Informationen zum aktuell ausgelieferten Build.</p>
+      <div class="debug-list">
+        ${rows.map(([label, value]) => `<div><b>${esc(label)}</b><span>${esc(value)}</span></div>`).join('')}
+      </div>
+      ${forkRepos.length ? `<div class="debug-list">${forkRepos.map(repo => `<div><b>${esc(repo.name || repo.repo || 'Repository')}</b><span>${esc(repo.version || repo.sha || 'unbekannt')}</span></div>`).join('')}</div>` : ''}
+      <button class="btn tonal" type="button" data-close-sheet>Schließen</button>
+    </div>`);
+  $('#sheetBody').onclick = e => { if (e.target.closest('[data-close-sheet]')) closeSheet(); };
 }
 
 async function openAvatarCrop(file) {
@@ -747,13 +777,13 @@ function buildPinPad() {
       vibrate();
       if (/\d/.test(ch) && value.length < 6) value += ch;
       if (ch === '←') value = value.slice(0, -1);
-      if (ch === 'OK' && handler) { const pin = value; value = ''; paint(); $('#pinPad').classList.add('hidden'); await handler(pin); }
+      if (ch === 'OK' && handler) { const pin = value; value = ''; paint(); $('#pinPad').classList.add('hidden'); document.body.classList.remove('pin-active'); await handler(pin); }
       paint();
     });
     grid.append(btn);
   }
-  $('#pinCancel').addEventListener('click', () => { value = ''; $('#pinPad').classList.add('hidden'); paint(); });
-  window.openPinPad = cb => { handler = cb; value = ''; paint(); $('#pinPad').classList.remove('hidden'); };
+  $('#pinCancel').addEventListener('click', () => { value = ''; $('#pinPad').classList.add('hidden'); document.body.classList.remove('pin-active'); paint(); });
+  window.openPinPad = cb => { handler = cb; value = ''; paint(); document.body.classList.add('pin-active'); $('#pinPad').classList.remove('hidden'); };
 }
 function openPinPad(callback) { window.openPinPad(callback); }
 
@@ -776,6 +806,17 @@ function applyTheme() {
 }
 function initials(name = '') { return name.split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || 'DT'; }
 function formatDate(value) { try { return new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)); } catch { return value; } }
+function formatDebugDate(value) { return value ? formatDate(value) : 'Nicht im lokalen Build gesetzt'; }
+function shortSha(value) { return value && value !== 'local' ? `${value.slice(0, 12)}…` : 'local'; }
+async function loadBuildInfo() {
+  try {
+    const response = await fetch(`build-info.json?v=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Buildinfo nicht verfügbar.');
+    return await response.json();
+  } catch {
+    return { app: 'Datello', buildSha: 'local', repoUpdatedAt: null, builtAt: null, sourceRepo: 'MaroIshiku/Datello', sourceRef: 'local', workflowRun: null, forkRepos: [] };
+  }
+}
 function normalizeUrl(url) { return /^https?:\/\//i.test(url) ? url : `https://${url}`; }
 function labelTheme(t) { return ({ lavendel: 'Lavendel', mint: 'Mint', sky: 'Sky', amber: 'Amber', graphit: 'Graphit' })[t] || t; }
 function labelMode(m) { return ({ auto: 'System', light: 'Hell', dark: 'Dunkel' })[m] || m; }
