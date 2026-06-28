@@ -1,0 +1,132 @@
+name: meiku-profileshare
+services:
+  Meiku:
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    cpus: 0.5
+    cpu_shares: 90
+    command: []
+    container_name: Meiku
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "134217728"
+          pids: 128
+        reservations:
+          devices: []
+    environment:
+      - DV2_ACCESS_LOG=
+      - DV2_DATA_FILE=/data/data.json
+      - DV2_PORT=8080
+      - DV2_SHARED_SECRET=
+      - ISHIKU_DATA_DIR=/data
+      - ISHIKU_LOG_LEVEL=info
+      - ISHIKU_SETUP_SECRET=
+      - MEIKU_GID=10001
+      - MEIKU_UID=10001
+      - TZ=Europe/Berlin
+    hostname: Meiku
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request;
+          urllib.request.urlopen('http://127.0.0.1:8080/readyz',
+          timeout=3).read()
+      timeout: 5s
+      interval: 30s
+      retries: 3
+      start_period: 10s
+    image: ghcr.io/maroishiku/meiku:latest
+    init: true
+    labels:
+      icon: https://raw.githubusercontent.com/MaroIshiku/meiku/main/assets/meiku-icon-512-20260628.png
+      org.opencontainers.image.description: Private encrypted profile, contact and payment QR vault with local QR generation.
+      org.opencontainers.image.source: https://github.com/MaroIshiku/meiku
+      org.opencontainers.image.title: Meiku - Profile Share
+      org.opencontainers.image.url: https://github.com/MaroIshiku/meiku
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: 5m
+    mem_limit: "134217728"
+    pids_limit: 128
+    ports:
+      - target: 8080
+        published: "8185"
+        protocol: tcp
+    pull_policy: always
+    read_only: true
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 10s
+    stop_signal: SIGTERM
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    volumes:
+      - type: bind
+        source: /DATA/AppData/ish_meiku/data
+        target: /data
+    devices: []
+    networks:
+      - Meiku
+    privileged: false
+networks:
+  Meiku:
+    name: Meiku
+    driver: bridge
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  author: MaroIshiku
+  category: Utilities
+  description:
+    de_de: Mobile-first PWA fuer verschluesselte private und geschaeftliche Profilkarten. Der Server speichert nur den verschluesselten Token; QR-Codes und Verschluesselung laufen lokal im Browser.
+    en_us: Mobile-first PWA for encrypted private and business profile cards. The server stores only the encrypted token; QR codes and encryption run locally in the browser.
+  developer: MaroIshiku
+  hostname: ""
+  icon: https://raw.githubusercontent.com/MaroIshiku/meiku/main/assets/meiku-icon-512-20260628.png
+  index: /
+  is_uncontrolled: false
+  main: Meiku
+  port_map: "8185"
+  scheme: http
+  store_app_id: Meiku
+  tagline:
+    de_de: Privater verschluesselter Profil-, Kontakt- und Zahlungs-QR-Tresor.
+    en_us: Private encrypted profile, contact and payment QR vault.
+  thumbnail: https://raw.githubusercontent.com/MaroIshiku/meiku/main/assets/meiku-icon-512-20260628.png
+  tips:
+    before_install:
+      de_de: >
+        Pflicht: Setze ISHIKU_SETUP_SECRET vor dem Start auf einen langen
+        zufaelligen Wert. DV2_SHARED_SECRET bleibt als Legacy-Alias
+        unterstuetzt.
+
+
+        Persistente Daten liegen auf dem ZimaOS-Host unter /DATA/AppData/ish_meiku/data und werden im Container nach /data gemountet. Beim Start setzt Meiku den Besitzer auf UID/GID 10001, sofern Docker CHOWN erlaubt.
+
+
+        Veroeffentliche die WebUI ueber HTTPS, wenn PWA, Web Crypto, Service Worker und Passkeys vollstaendig funktionieren sollen.
+      en_us: >
+        Required: set ISHIKU_SETUP_SECRET to a long random value before
+        starting. DV2_SHARED_SECRET remains supported as a legacy alias.
+
+
+        Persistent data is stored on the ZimaOS host at /DATA/AppData/ish_meiku/data and mounted into the container at /data. On startup Meiku fixes the directory owner to UID/GID 10001 when Docker permits CHOWN.
+
+
+        Publish the WebUI through HTTPS if you want full PWA, Web Crypto, Service Worker and Passkey support.
+  title:
+    custom: Meiku - Profile Share
+    de_de: Meiku
+    en_us: Meiku
