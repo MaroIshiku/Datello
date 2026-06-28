@@ -60,6 +60,11 @@ Datenordner auf dem Host vorbereiten:
 
 ```bash
 mkdir -p /DATA/AppData/meiku/data
+```
+
+Beim Containerstart setzt der Meiku-Entrypoint den Besitzer des Datenordners auf `10001:10001`, sofern Docker `CHOWN` fuer den Bind-Mount erlaubt. Falls dein Host das nicht erlaubt, fuehre einmalig aus:
+
+```bash
 chown -R 10001:10001 /DATA/AppData/meiku/data
 ```
 
@@ -117,7 +122,7 @@ Im Container liegt der verschluesselte Token standardmaessig unter `/data/data.j
 - Meiku speichert keine Plaintext-Passwoerter und keine reversibel verschluesselten Server-Passwoerter.
 - Eine oeffentliche Server-Registrierung existiert nicht.
 - `data.json`, `/api/data`, `/api/token` und `save.php` werden vom Service Worker nicht gecacht.
-- Der Container laeuft ohne Root-User, read-only, mit `/data`-Bind-Mount und `/tmp`-Tmpfs.
+- Der Container startet kurz mit Root-Rechten, korrigiert bei Bedarf den `/data`-Bind-Mount und laeuft danach als UID/GID `10001:10001`, read-only, mit `/data`-Bind-Mount und `/tmp`-Tmpfs.
 
 ## Updates und Backup
 

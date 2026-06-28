@@ -70,7 +70,13 @@ class AppConfig:
             raise SystemExit("Configured shared secret must not be CHANGE_ME.")
         self.data_file.parent.mkdir(parents=True, exist_ok=True)
         if not self.data_file.exists():
-            atomic_write_json(self.data_file, {"token": "", "updated": None})
+            try:
+                atomic_write_json(self.data_file, {"token": "", "updated": None})
+            except PermissionError as exc:
+                raise SystemExit(
+                    f"Data directory is not writable by the Meiku process: {self.data_file.parent}. "
+                    "Fix the host bind-mount permissions or use the provided Docker entrypoint."
+                ) from exc
 
 
 def utc_now_iso() -> str:

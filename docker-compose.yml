@@ -8,7 +8,6 @@ services:
     hostname: meiku
     restart: unless-stopped
     init: true
-    user: "10001:10001"
     stop_signal: SIGTERM
     stop_grace_period: 10s
 
@@ -17,6 +16,8 @@ services:
       ISHIKU_DATA_DIR: /data
       ISHIKU_LOG_LEVEL: ${ISHIKU_LOG_LEVEL:-info}
       ISHIKU_SETUP_SECRET: ${ISHIKU_SETUP_SECRET:-${DV2_SHARED_SECRET:?Set ISHIKU_SETUP_SECRET or DV2_SHARED_SECRET before starting Meiku}}
+      MEIKU_UID: "10001"
+      MEIKU_GID: "10001"
       DV2_PORT: "8080"
       DV2_DATA_FILE: /data/data.json
       DV2_SHARED_SECRET: ${DV2_SHARED_SECRET:-${ISHIKU_SETUP_SECRET:-}}
@@ -37,6 +38,10 @@ services:
       - /tmp:size=16m,mode=1777
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     security_opt:
       - no-new-privileges:true
     pids_limit: 128
@@ -96,12 +101,12 @@ x-casaos:
       en_us: |
         Required: set ISHIKU_SETUP_SECRET to a long random value before starting. DV2_SHARED_SECRET remains supported as a legacy alias.
 
-        Persistent data is stored on the ZimaOS host at /DATA/AppData/meiku/data and mounted into the container at /data. The directory must be writable by UID/GID 10001.
+        Persistent data is stored on the ZimaOS host at /DATA/AppData/meiku/data and mounted into the container at /data. On startup Meiku fixes the directory owner to UID/GID 10001 when Docker permits CHOWN.
 
         Publish the WebUI through HTTPS if you want full PWA, Web Crypto, Service Worker and Passkey support.
       de_de: |
         Pflicht: Setze ISHIKU_SETUP_SECRET vor dem Start auf einen langen zufaelligen Wert. DV2_SHARED_SECRET bleibt als Legacy-Alias unterstuetzt.
 
-        Persistente Daten liegen auf dem ZimaOS-Host unter /DATA/AppData/meiku/data und werden im Container nach /data gemountet. Das Verzeichnis muss fuer UID/GID 10001 schreibbar sein.
+        Persistente Daten liegen auf dem ZimaOS-Host unter /DATA/AppData/meiku/data und werden im Container nach /data gemountet. Beim Start setzt Meiku den Besitzer auf UID/GID 10001, sofern Docker CHOWN erlaubt.
 
         Veroeffentliche die WebUI ueber HTTPS, wenn PWA, Web Crypto, Service Worker und Passkeys vollstaendig funktionieren sollen.

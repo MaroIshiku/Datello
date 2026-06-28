@@ -35,7 +35,7 @@ Stand: 2026-06-28
 - Server setzt grundlegende Security-Header.
 - Service Worker cached keine Token-/Save-Endpunkte.
 - Container laeuft als non-root User.
-- Container laeuft read-only mit `/data`-Bind-Mount und `/tmp`-Tmpfs.
+- Container laeuft read-only mit `/data`-Bind-Mount und `/tmp`-Tmpfs; der Entrypoint korrigiert den Datenordner-Besitzer und droppt danach auf UID/GID `10001:10001`.
 - Capabilities werden gedroppt und `no-new-privileges` ist gesetzt.
 - Ressourcenlimits fuer CPU, RAM und Prozesse sind gesetzt.
 - Log-Rotation ist gesetzt, damit ZimaOS-Speicher nicht durch Logs volllaeuft.
@@ -64,4 +64,4 @@ Stand: 2026-06-28
 - Readiness prueft `GET /readyz`.
 - Reverse Proxy muss HTTPS terminieren.
 - `.env` enthaelt `WEBUI_PORT`, `TZ`, `ISHIKU_LOG_LEVEL`, `ISHIKU_SETUP_SECRET`, `DV2_ACCESS_LOG` und `MEIKU_DATA_PATH`; `.env` wird nicht versioniert.
-- Host-Datenordner muss fuer UID/GID `10001:10001` schreibbar sein.
+- Host-Datenordner wird beim Start auf UID/GID `10001:10001` gesetzt, sofern Docker `CHOWN` erlaubt; andernfalls muss der Host-Ordner manuell passend gesetzt werden.

@@ -1,4 +1,6 @@
 .git
+.git-local
+.agents
 .gitignore
 .env
 .DS_Store
