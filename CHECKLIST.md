@@ -49,12 +49,13 @@ Date: 2026-06-29
 - Login with master password remains available.
 - PIN stores only a locally encrypted password blob.
 - Passkey/WebAuthn PRF remains optional.
-- Private, Company, PayPal and Bank tabs remain available.
+- Private, Company and Payments tabs remain available.
 - QR codes are generated locally.
 - vCard contains only private fields.
 - PayPal link contains no payment reference.
 - GiroCode contains an optional payment reference.
 - Amount is synchronized between PayPal and Bank.
+- The Payments tab switches between PayPal and bank transfer mode.
 - Export/import of the token remains available.
 
 ## Deployment

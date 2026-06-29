@@ -32,7 +32,7 @@ const MODES = ['system', 'light', 'dark'];
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-const state = { token: '', updated: null, data: null, masterPassword: '', activeTab: 'privat', amount: sessionStorage.getItem('dv2.amount') || '', purpose: sessionStorage.getItem('dv2.purpose') || '', wakeLock: null, buildInfo: null };
+const state = { token: '', updated: null, data: null, masterPassword: '', activeTab: 'privat', paymentMode: sessionStorage.getItem('meiku.paymentMode') || 'paypal', amount: sessionStorage.getItem('dv2.amount') || '', purpose: sessionStorage.getItem('dv2.purpose') || '', wakeLock: null, buildInfo: null };
 
 init();
 
@@ -193,6 +193,10 @@ function updateVaultHeader() {
 }
 
 function setTab(tab) {
+  if (tab === 'paypal' || tab === 'bank') {
+    state.paymentMode = tab;
+    tab = 'payment';
+  }
   state.activeTab = tab;
   $$('.bottom-nav button').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
   renderTab();
@@ -207,8 +211,7 @@ function renderTab() {
     return;
   }
   if (state.activeTab === 'privat') renderContactTab(root, 'Private', 'Phone, email and address.', privateRows(), QrPayload.vcard(state.data), 'Private vCard');
-  if (state.activeTab === 'paypal') renderPaymentTab(root, 'paypal');
-  if (state.activeTab === 'bank') renderPaymentTab(root, 'bank');
+  if (state.activeTab === 'payment') renderPaymentTab(root);
 }
 
 function renderContactTab(root, title, subtitle, rows, qrPayload, qrLabel) {
@@ -223,25 +226,38 @@ function renderContactTab(root, title, subtitle, rows, qrPayload, qrLabel) {
   if (qrPayload) root.append(qrCard(qrPayload, qrLabel));
 }
 
-function renderPaymentTab(root, kind) {
-  root.className = `content-card tab-${kind} has-qr`;
+function renderPaymentTab(root) {
+  const kind = state.paymentMode === 'bank' ? 'bank' : 'paypal';
+  state.paymentMode = kind;
+  sessionStorage.setItem('meiku.paymentMode', kind);
+  root.className = `content-card tab-payment payment-${kind} has-qr`;
   const isPayPal = kind === 'paypal';
-  const title = isPayPal ? 'PayPal' : 'Bank';
+  const title = 'Payments';
   const payload = isPayPal ? QrPayload.paypal(state.data, state.amount) : QrPayload.girocode(state.data, state.amount, state.purpose);
-  const link = QrPayload.paypal(state.data, state.amount);
-  root.innerHTML = `<div class="panel-head"><div><h2>${title}</h2><p>${isPayPal ? 'paypal.me payment link.' : 'SEPA GiroCode / EPC QR.'}</p></div></div>`;
+  root.innerHTML = `
+    <div class="panel-head">
+      <div><h2>${title}</h2><p>${isPayPal ? 'paypal.me payment link.' : 'SEPA GiroCode / EPC QR.'}</p></div>
+      <div class="payment-switch" role="group" aria-label="Payment method">
+        <button class="${isPayPal ? 'active' : ''}" data-payment-mode="paypal" type="button">PayPal</button>
+        <button class="${!isPayPal ? 'active' : ''}" data-payment-mode="bank" type="button">Bank transfer</button>
+      </div>
+    </div>`;
   const box = document.createElement('div');
   box.className = 'amount-card';
   box.innerHTML = `
     <label class="field"><span>Amount</span><input id="amountInput" inputmode="decimal" autocomplete="off" value="${esc(state.amount)}" placeholder="e.g. 12.50"></label>
     <div class="chips">${AMOUNTS.map(v => `<button class="chip ${normalizeAmount(state.amount) === Number(v).toFixed(2) ? 'active' : ''}" data-amount="${v}" type="button">${v} €</button>`).join('')}</div>
-    <label class="field"><span>Payment reference</span><input id="purposeInput" autocomplete="off" value="${esc(state.purpose)}" placeholder="Optional"></label>`;
+    ${isPayPal ? '' : `<label class="field"><span>Payment reference</span><input id="purposeInput" autocomplete="off" value="${esc(state.purpose)}" placeholder="Optional"></label>`}`;
   root.append(box);
   const info = document.createElement('div');
   info.className = 'qr-caption';
   const qrWrap = qrCard(payload, isPayPal ? 'PayPal.me Link' : 'SEPA / EPC QR Code', info);
   root.append(qrWrap);
-  const refreshPreview = () => updatePaymentPreview(kind, box, qrWrap, info);
+  $$('.payment-switch button', root).forEach(button => button.addEventListener('click', () => {
+    state.paymentMode = button.dataset.paymentMode;
+    renderPaymentTab(root);
+  }));
+  const refreshPreview = () => updatePaymentPreview(box, qrWrap, info);
   $('#amountInput', box).addEventListener('input', e => {
     state.amount = e.target.value;
     sessionStorage.setItem('dv2.amount', state.amount);
@@ -261,8 +277,8 @@ function renderPaymentTab(root, kind) {
   refreshPreview();
 }
 
-function updatePaymentPreview(kind, box, qrWrap, info) {
-  const isPayPal = kind === 'paypal';
+function updatePaymentPreview(box, qrWrap, info) {
+  const isPayPal = state.paymentMode !== 'bank';
   const payload = isPayPal ? QrPayload.paypal(state.data, state.amount) : QrPayload.girocode(state.data, state.amount, state.purpose);
   const link = QrPayload.paypal(state.data, state.amount);
   $$('.chip', box).forEach(chip => chip.classList.toggle('active', normalizeAmount(state.amount) === Number(chip.dataset.amount).toFixed(2)));
@@ -359,12 +375,11 @@ async function shareCurrentTab() {
 }
 function buildShareText() {
   const d = state.data;
-  if (state.activeTab === 'paypal') {
+  if (state.activeTab === 'payment' && state.paymentMode !== 'bank') {
     return [
       `Recipient: ${d.n}`,
       `PayPal: ${QrPayload.paypal(d, state.amount)}`,
       normalizeAmount(state.amount) ? `Amount: ${normalizeAmount(state.amount)} EUR` : '',
-      state.purpose ? `Payment reference: ${state.purpose}` : ''
     ].filter(Boolean).join('\n');
   }
   if (state.activeTab === 'privat') return [d.n, d.m, d.e1, [d.s, d.z].filter(Boolean).join(', ')].filter(Boolean).join('\n');

@@ -26,8 +26,7 @@
   "main_sections": [
     { "id": "privat", "label": "Private", "icon": "account_circle" },
     { "id": "firma", "label": "Company", "icon": "badge" },
-    { "id": "paypal", "label": "PayPal", "icon": "qr_code" },
-    { "id": "bank", "label": "Bank", "icon": "qr_code" }
+    { "id": "payment", "label": "Payments", "icon": "account_balance_wallet" }
   ],
   "first_run_setup": {
     "enabled": false,

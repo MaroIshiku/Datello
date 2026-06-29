@@ -587,6 +587,44 @@ h3 {
   line-height: var(--type-body-medium-line);
 }
 
+.payment-switch {
+  min-height: 40px;
+  padding: 3px;
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-soft);
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  flex: 0 0 min(100%, 220px);
+}
+
+.payment-switch button {
+  min-height: 32px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-on-surface-muted);
+  font-size: var(--type-label-medium-size);
+  line-height: var(--type-label-medium-line);
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.payment-switch button.active {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.tab-payment .panel-head {
+  flex-wrap: wrap;
+}
+
+.tab-payment .payment-switch {
+  width: 100%;
+  flex-basis: 100%;
+}
+
 .contact-list {
   display: grid;
   gap: var(--space-2);
@@ -805,9 +843,9 @@ h3 {
 }
 
 .tab-firma .qr-card.qr-share-card {
-  min-height: 106px;
-  padding: 8px;
-  gap: 2px;
+  min-height: 154px;
+  padding: var(--space-2);
+  gap: var(--space-1);
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: auto minmax(0, 1fr);
 }
@@ -826,8 +864,8 @@ h3 {
 }
 
 .tab-firma .qr-canvas {
-  width: min(25vw, 82px) !important;
-  height: min(25vw, 82px) !important;
+  width: min(36vw, 122px) !important;
+  height: min(36vw, 122px) !important;
 }
 
 .tab-firma .qr-caption[aria-hidden="true"] {
@@ -858,7 +896,7 @@ h3 {
   background: color-mix(in srgb, var(--color-surface) 88%, var(--color-primary-container));
   box-shadow: var(--shadow-soft);
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-1);
   flex-shrink: 0;
 }
@@ -877,9 +915,10 @@ h3 {
   font-weight: 760;
 }
 
-.bottom-nav button span {
-  font-size: 1.05rem;
-  line-height: 1;
+.bottom-nav button svg {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
 }
 
 .bottom-nav button.active {
@@ -1422,6 +1461,15 @@ h3 {
     height: min(36vw, 118px) !important;
   }
 
+  .tab-firma .qr-card.qr-share-card {
+    min-height: 136px;
+  }
+
+  .tab-firma .qr-canvas {
+    width: min(32vw, 108px) !important;
+    height: min(32vw, 108px) !important;
+  }
+
   .bottom-nav {
     height: 64px;
   }
@@ -1471,6 +1519,11 @@ h3 {
   .contact-list,
   .amount-card {
     grid-column: 1;
+  }
+
+  .payment-switch {
+    width: auto;
+    flex-basis: 240px;
   }
 
   .qr-card.qr-share-card {

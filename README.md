@@ -18,11 +18,12 @@ The interface uses the shared AppHeader, local logo assets, shared design tokens
 - Web Crypto API: AES-GCM-256 plus PBKDF2-SHA-256
 - PIN quick login with locally encrypted master password
 - Optional passkey/biometric quick login through WebAuthn PRF
-- Tabs: Private, Company, PayPal, Bank
+- Tabs: Private, Company and Payments
 - Guided profile progress for Private, Business, PayPal and Bank
 - Separate private and business addresses
 - Local QR generation without a third-party API
 - Separate vCard QRs for Private and Company
+- Payments tab with PayPal and bank transfer switch
 - PayPal QR and GiroCode/EPC QR with synchronized amount
 - Export/import for the encrypted token
 - PWA manifest, service worker and Meiku PWA icons
