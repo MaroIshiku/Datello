@@ -174,16 +174,16 @@ class ContactCardHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         if self.path_no_query not in {"/api/token", "/save.php"}:
-            self.respond_json({"ok": False, "error": "Nicht gefunden."}, HTTPStatus.NOT_FOUND)
+            self.respond_json({"ok": False, "error": "Not found."}, HTTPStatus.NOT_FOUND)
             return
         if not self.authorized():
-            self.respond_json({"ok": False, "error": "Ungültiges Shared Secret."}, HTTPStatus.FORBIDDEN)
+            self.respond_json({"ok": False, "error": "Invalid shared secret."}, HTTPStatus.FORBIDDEN)
             return
         try:
             payload = self.read_json_body()
             token = payload.get("token", "")
             if not isinstance(token, str) or len(token) < MIN_TOKEN_LENGTH or not TOKEN_RE.fullmatch(token):
-                self.respond_json({"ok": False, "error": "Token fehlt oder ist zu kurz."}, HTTPStatus.UNPROCESSABLE_ENTITY)
+                self.respond_json({"ok": False, "error": "Token is missing or too short."}, HTTPStatus.UNPROCESSABLE_ENTITY)
                 return
             updated = utc_now_iso()
             atomic_write_json(self.config.data_file, {"token": token, "updated": updated})
@@ -191,7 +191,7 @@ class ContactCardHandler(BaseHTTPRequestHandler):
         except ValueError as exc:
             self.respond_json({"ok": False, "error": str(exc)}, HTTPStatus.BAD_REQUEST)
         except OSError:
-            self.respond_json({"ok": False, "error": "Token konnte nicht geschrieben werden."}, HTTPStatus.INTERNAL_SERVER_ERROR)
+            self.respond_json({"ok": False, "error": "Token could not be written."}, HTTPStatus.INTERNAL_SERVER_ERROR)
 
     @property
     def path_no_query(self) -> str:
@@ -205,16 +205,16 @@ class ContactCardHandler(BaseHTTPRequestHandler):
         try:
             length = int(self.headers.get("Content-Length", "0"))
         except ValueError as exc:
-            raise ValueError("Ungültige Content-Length.") from exc
+            raise ValueError("Invalid Content-Length.") from exc
         if length <= 0 or length > MAX_BODY_BYTES:
-            raise ValueError("Ungültiger Request.")
+            raise ValueError("Invalid request.")
         raw = self.rfile.read(length)
         try:
             data = json.loads(raw.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise ValueError("JSON konnte nicht gelesen werden.") from exc
+            raise ValueError("JSON could not be read.") from exc
         if not isinstance(data, dict):
-            raise ValueError("JSON-Objekt erwartet.")
+            raise ValueError("JSON object expected.")
         return data
 
     def respond_json(self, payload: dict, status: HTTPStatus = HTTPStatus.OK, no_store: bool = False) -> None:

@@ -88,10 +88,10 @@ x-casaos:
     de_de: Meiku
   tagline:
     en_us: Profile Share for encrypted contact and payment QR cards.
-    de_de: Profile Share fuer verschluesselte Kontakt- und Zahlungs-QR-Karten.
+    de_de: Profile Share for encrypted contact and payment QR cards.
   description:
     en_us: Mobile-first PWA for encrypted private and business profile cards. The server stores only the encrypted token; QR codes and encryption run locally in the browser.
-    de_de: Mobile-first PWA fuer verschluesselte private und geschaeftliche Profilkarten. Der Server speichert nur den verschluesselten Token; QR-Codes und Verschluesselung laufen lokal im Browser.
+    de_de: Mobile-first PWA for encrypted private and business profile cards. The server stores only the encrypted token; QR codes and encryption run locally in the browser.
   icon: https://raw.githubusercontent.com/MaroIshiku/meiku/main/assets/meiku-icon-512-20260629.png
   thumbnail: https://raw.githubusercontent.com/MaroIshiku/meiku/main/assets/meiku-icon-512-20260629.png
   index: /
@@ -105,8 +105,8 @@ x-casaos:
 
         Publish the WebUI through HTTPS if you want full PWA, Web Crypto, Service Worker and Passkey support.
       de_de: |
-        Pflicht: Setze ISHIKU_SETUP_SECRET vor dem Start auf einen langen zufaelligen Wert. DV2_SHARED_SECRET bleibt als Legacy-Alias unterstuetzt.
+        Required: set ISHIKU_SETUP_SECRET to a long random value before starting. DV2_SHARED_SECRET remains supported as a legacy alias.
 
-        Persistente Daten liegen auf dem ZimaOS-Host unter /DATA/AppData/meiku/data und werden im Container nach /data gemountet. Beim Start setzt Meiku den Besitzer auf UID/GID 10001, sofern Docker CHOWN erlaubt.
+        Persistent data is stored on the ZimaOS host at /DATA/AppData/meiku/data and mounted into the container at /data. On startup Meiku fixes the directory owner to UID/GID 10001 when Docker permits CHOWN.
 
-        Veroeffentliche die WebUI ueber HTTPS, wenn PWA, Web Crypto, Service Worker und Passkeys vollstaendig funktionieren sollen.
+        Publish the WebUI through HTTPS if you want full PWA, Web Crypto, Service Worker and Passkey support.

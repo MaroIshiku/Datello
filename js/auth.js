@@ -13,7 +13,7 @@ export const Auth = {
   async passwordFromPin(pin) {
     assertPin(pin);
     const blob = localStorage.getItem(PIN_KEY);
-    if (!blob) throw new Error('Keine PIN eingerichtet.');
+    if (!blob) throw new Error('No PIN is set up.');
     return decryptStringWithPin(blob, pin);
   },
   clearPin() { localStorage.removeItem(PIN_KEY); },
@@ -22,7 +22,7 @@ export const Auth = {
   hasPasskey() { return Boolean(localStorage.getItem(PASSKEY_META_KEY) && localStorage.getItem(PASSKEY_BLOB_KEY)); },
 
   async setupPasskey(masterPassword) {
-    if (!Auth.passkeyAvailable()) throw new Error('Passkeys werden auf diesem Gerät nicht unterstützt.');
+    if (!Auth.passkeyAvailable()) throw new Error('Passkeys are not supported on this device.');
     const userId = randomBytes(16);
     const challenge = randomBytes(32);
     const prfSalt = randomBytes(32);
@@ -45,7 +45,7 @@ export const Auth = {
     if (!prfResult) {
       localStorage.removeItem(PASSKEY_META_KEY);
       localStorage.removeItem(PASSKEY_BLOB_KEY);
-      throw new Error('Passkey angelegt, aber dieser Browser oder Authenticator liefert keinen PRF-Schlüssel für verschlüsselten Schnell-Login. Bitte PIN nutzen.');
+      throw new Error('Passkey was created, but this browser or authenticator does not provide a PRF key for encrypted quick login. Please use PIN.');
     }
     const rawKey = new Uint8Array(prfResult).slice(0, 32);
     localStorage.setItem(PASSKEY_META_KEY, JSON.stringify({ id: bytesToBase64(credentialId), prf: true, salt: bytesToBase64(prfSalt) }));
@@ -72,7 +72,7 @@ export const Auth = {
   async passwordFromPasskey() {
     const meta = JSON.parse(localStorage.getItem(PASSKEY_META_KEY) || 'null');
     const blob = localStorage.getItem(PASSKEY_BLOB_KEY);
-    if (!meta?.prf || !blob) throw new Error('Kein nutzbarer Passkey-Schnelllogin eingerichtet.');
+    if (!meta?.prf || !blob) throw new Error('No usable passkey quick login is set up.');
     const credential = await navigator.credentials.get({
       publicKey: {
         challenge: randomBytes(32),
@@ -83,7 +83,7 @@ export const Auth = {
       }
     });
     const prfResult = credential.getClientExtensionResults?.().prf?.results?.first;
-    if (!prfResult) throw new Error('Dieser Passkey hat keinen PRF-Schlüssel zurückgegeben.');
+    if (!prfResult) throw new Error('This passkey did not return a PRF key.');
     return decryptStringWithRawKey(blob, new Uint8Array(prfResult).slice(0, 32));
   },
 
@@ -102,5 +102,5 @@ export const Auth = {
 };
 
 function assertPin(pin) {
-  if (!/^\d{4,6}$/.test(pin)) throw new Error('PIN muss 4–6 Ziffern haben.');
+  if (!/^\d{4,6}$/.test(pin)) throw new Error('PIN must have 4-6 digits.');
 }

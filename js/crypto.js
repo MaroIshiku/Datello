@@ -59,11 +59,11 @@ export async function encryptJson(payload, masterPassword) {
 }
 
 export async function decryptJson(token, masterPassword) {
-  if (!token) throw new Error('Kein Token vorhanden.');
+  if (!token) throw new Error('No token available.');
   const bytes = base64ToBytes(token);
-  if (bytes.length < 1 + 4 + 16 + 12 + 17) throw new Error('Token ist unvollständig.');
+  if (bytes.length < 1 + 4 + 16 + 12 + 17) throw new Error('Token is incomplete.');
   const version = bytes[0];
-  if (version !== TOKEN_VERSION) throw new Error(`Nicht unterstützte Token-Version: ${version}`);
+  if (version !== TOKEN_VERSION) throw new Error(`Unsupported token version: ${version}`);
   const iterations = readUint32(bytes, 1);
   const salt = bytes.slice(5, 21);
   const iv = bytes.slice(21, 33);
@@ -83,7 +83,7 @@ export async function encryptStringWithPin(secret, pin) {
 
 export async function decryptStringWithPin(blob, pin) {
   const box = JSON.parse(blob);
-  if (box.v !== TOKEN_VERSION) throw new Error('PIN-Blob-Version passt nicht.');
+  if (box.v !== TOKEN_VERSION) throw new Error('PIN blob version does not match.');
   const salt = base64ToBytes(box.salt);
   const iv = base64ToBytes(box.iv);
   const ciphertext = base64ToBytes(box.ct);

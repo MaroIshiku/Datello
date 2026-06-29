@@ -1,67 +1,67 @@
-# Abnahme-Check
+# Acceptance Check
 
-Stand: 2026-06-29
+Date: 2026-06-29
 
-## Architektur
+## Architecture
 
-- Python-Server liefert die Meiku PWA und speichert nur den verschluesselten Token.
-- Clientseitige Verschluesselung bleibt vollstaendig im Browser.
-- Dockerfile und `docker-compose.yml` fuer ZimaOS/Reverse-Proxy-Betrieb vorhanden.
-- ZimaOS-Compose nutzt GHCR-Image `ghcr.io/maroishiku/meiku:latest` statt lokalem Build.
-- Persistenz erfolgt ueber Bind-Mount `/DATA/AppData/meiku/data:/data`.
-- `x-casaos`-Metadaten fuer ZimaOS/CasaOS-App-Import vorhanden.
-- App-Logo und PWA-Icons sind aus dem Meiku-Logo abgeleitet.
+- The Python server serves the Meiku PWA and stores only the encrypted token.
+- Client-side encryption stays entirely in the browser.
+- Dockerfile and `docker-compose.yml` are available for ZimaOS/reverse-proxy operation.
+- ZimaOS Compose uses the GHCR image `ghcr.io/maroishiku/meiku:latest` instead of a local build.
+- Persistence uses the bind mount `/DATA/AppData/meiku/data:/data`.
+- `x-casaos` metadata is available for ZimaOS/CasaOS app import.
+- App logo and PWA icons are derived from the Meiku logo.
 
-## Designsystem
+## Design System
 
-- Aktive Oberflaeche nutzt `design-system/tokens.css` aus dem Pixel Soft Utility Codex Pack v4.
-- Gemeinsame Zip-Artefakte liegen im Repo: `design-system/`, `icons/`, `contracts/`, `checklists/`.
-- `app.manifest.json` beschreibt Meiku nach dem Pixel Soft Utility App-Manifest-Schema.
-- App-Name ist `Meiku - Profile Share`.
-- Header nutzt gemeinsames AppLogo/AppName/AppSubtitle-Muster.
-- Theme-Attribute liegen auf `document.documentElement`: `data-theme`, `data-mode`, `data-resolved-mode`.
-- Theme- und Mode-Persistenz nutzt `meiku-theme` und `meiku-mode`.
-- Sechs Themes sind verfuegbar: Lavender, Mint, Sky, Amber, Rose, Graphite.
-- Modi sind verfuegbar: System, Hell, Dunkel.
-- Technische Build-Informationen liegen nur im Debug-/Settings-Sheet.
+- The active interface uses `design-system/tokens.css` from Pixel Soft Utility Codex Pack v4.
+- Shared ZIP artifacts are stored in the repository: `design-system/`, `icons/`, `contracts/`, `checklists/`.
+- `app.manifest.json` describes Meiku according to the Pixel Soft Utility app manifest schema.
+- The app name is `Meiku - Profile Share`.
+- The header uses the shared AppLogo/AppName/AppSubtitle pattern.
+- Theme attributes live on `document.documentElement`: `data-theme`, `data-mode`, `data-resolved-mode`.
+- Theme and mode persistence uses `meiku-theme` and `meiku-mode`.
+- Six themes are available: Lavender, Mint, Sky, Amber, Rose, Graphite.
+- Modes are available: System, Light, Dark.
+- Technical build information appears only in the debug/settings sheet.
 
-## Sicherheit
+## Security
 
-- `POST /api/token` und Legacy `POST /save.php` benoetigen `X-Auth-Token`.
-- Ohne `ISHIKU_SETUP_SECRET`, `ISHIKU_SETUP_SECRET_FILE` oder Legacy `DV2_SHARED_SECRET` startet der Container nicht.
-- Der Server liest bevorzugt `ISHIKU_SETUP_SECRET_FILE`, dann `ISHIKU_SETUP_SECRET`, dann `DV2_SHARED_SECRET`.
-- Token-Write ist atomar und auf 1 MB Request-Groesse begrenzt.
-- Token wird auf Mindestlaenge und erlaubte Zeichen geprueft.
-- Server setzt grundlegende Security-Header.
-- Service Worker cached keine Token-/Save-Endpunkte.
-- Container laeuft als non-root User.
-- Container laeuft read-only mit `/data`-Bind-Mount und `/tmp`-Tmpfs; der Entrypoint korrigiert den Datenordner-Besitzer und droppt danach auf UID/GID `10001:10001`.
-- Capabilities werden gedroppt und `no-new-privileges` ist gesetzt.
-- Ressourcenlimits fuer CPU, RAM und Prozesse sind gesetzt.
-- Log-Rotation ist gesetzt, damit ZimaOS-Speicher nicht durch Logs volllaeuft.
+- `POST /api/token` and legacy `POST /save.php` require `X-Auth-Token`.
+- Without `ISHIKU_SETUP_SECRET`, `ISHIKU_SETUP_SECRET_FILE` or legacy `DV2_SHARED_SECRET`, the container does not start.
+- The server prefers `ISHIKU_SETUP_SECRET_FILE`, then `ISHIKU_SETUP_SECRET`, then `DV2_SHARED_SECRET`.
+- Token writes are atomic and limited to a 1 MB request size.
+- Tokens are checked for minimum length and allowed characters.
+- The server sets basic security headers.
+- The service worker does not cache token/save endpoints.
+- The container runs as a non-root user.
+- The container runs read-only with a `/data` bind mount and `/tmp` tmpfs; the entrypoint fixes the data folder owner and then drops to UID/GID `10001:10001`.
+- Capabilities are dropped and `no-new-privileges` is set.
+- Resource limits for CPU, RAM and processes are set.
+- Log rotation is set so ZimaOS storage is not filled by logs.
 
-## Funktionen
+## Features
 
-- Setup speichert verschluesselte Daten ueber die Python-API.
-- Ersteinrichtung fragt vollen Namen, Master-Passwort und Server-Secret ab.
-- Nach Ersteinrichtung oeffnet sich ein gefuehrter Profil-Fortschritt.
-- Private und geschaeftliche Adresse sind getrennte Felder.
-- Login per Master-Passwort bleibt erhalten.
-- PIN speichert nur einen lokal verschluesselten Passwort-Blob.
-- Passkey/WebAuthn-PRF bleibt optional erhalten.
-- Privat-, Firma-, PayPal- und Bank-Reiter bleiben erhalten.
-- QR-Codes werden lokal erzeugt.
-- vCard enthaelt nur private Felder.
-- PayPal-Link enthaelt keinen Verwendungszweck.
-- GiroCode enthaelt optionalen Verwendungszweck.
-- Betrag synchronisiert zwischen PayPal und Bank.
-- Export/Import des Tokens bleibt erhalten.
+- Setup saves encrypted data through the Python API.
+- First run asks for full name, master password and server secret.
+- After first run, a guided profile progress flow opens.
+- Private and business address are separate fields.
+- Login with master password remains available.
+- PIN stores only a locally encrypted password blob.
+- Passkey/WebAuthn PRF remains optional.
+- Private, Company, PayPal and Bank tabs remain available.
+- QR codes are generated locally.
+- vCard contains only private fields.
+- PayPal link contains no payment reference.
+- GiroCode contains an optional payment reference.
+- Amount is synchronized between PayPal and Bank.
+- Export/import of the token remains available.
 
 ## Deployment
 
-- `docker compose pull && docker compose up -d` startet ohne lokalen Build.
-- Healthcheck prueft `GET /healthz`.
-- Readiness prueft `GET /readyz`.
-- Reverse Proxy muss HTTPS terminieren.
-- `.env` enthaelt `WEBUI_PORT`, `TZ`, `ISHIKU_LOG_LEVEL`, `ISHIKU_SETUP_SECRET`, `DV2_ACCESS_LOG` und `MEIKU_DATA_PATH`; `.env` wird nicht versioniert.
-- Host-Datenordner wird beim Start auf UID/GID `10001:10001` gesetzt, sofern Docker `CHOWN` erlaubt; andernfalls muss der Host-Ordner manuell passend gesetzt werden.
+- `docker compose pull && docker compose up -d` starts without a local build.
+- Health check verifies `GET /healthz`.
+- Readiness check verifies `GET /readyz`.
+- Reverse proxy must terminate HTTPS.
+- `.env` contains `WEBUI_PORT`, `TZ`, `ISHIKU_LOG_LEVEL`, `ISHIKU_SETUP_SECRET`, `DV2_ACCESS_LOG` and `MEIKU_DATA_PATH`; `.env` is not versioned.
+- The host data folder is set to UID/GID `10001:10001` on startup when Docker permits `CHOWN`; otherwise the host folder must be adjusted manually.

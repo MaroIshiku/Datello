@@ -90,7 +90,7 @@ x-casaos:
   author: MaroIshiku
   category: Utilities
   description:
-    de_de: Mobile-first PWA fuer verschluesselte private und geschaeftliche Profilkarten. Der Server speichert nur den verschluesselten Token; QR-Codes und Verschluesselung laufen lokal im Browser.
+    de_de: Mobile-first PWA for encrypted private and business profile cards. The server stores only the encrypted token; QR codes and encryption run locally in the browser.
     en_us: Mobile-first PWA for encrypted private and business profile cards. The server stores only the encrypted token; QR codes and encryption run locally in the browser.
   developer: MaroIshiku
   hostname: ""
@@ -102,21 +102,21 @@ x-casaos:
   scheme: http
   store_app_id: Meiku
   tagline:
-    de_de: Privater verschluesselter Profil-, Kontakt- und Zahlungs-QR-Tresor.
+    de_de: Private encrypted profile, contact and payment QR vault.
     en_us: Private encrypted profile, contact and payment QR vault.
   thumbnail: https://raw.githubusercontent.com/MaroIshiku/meiku/main/assets/meiku-icon-512-20260629.png
   tips:
     before_install:
       de_de: >
-        Pflicht: Setze ISHIKU_SETUP_SECRET vor dem Start auf einen langen
-        zufaelligen Wert. DV2_SHARED_SECRET bleibt als Legacy-Alias
-        unterstuetzt.
+        Required: set ISHIKU_SETUP_SECRET to a long
+        random value before starting. DV2_SHARED_SECRET remains supported as a legacy
+        alias.
 
 
-        Persistente Daten liegen auf dem ZimaOS-Host unter /DATA/AppData/ish_meiku/data und werden im Container nach /data gemountet. Beim Start setzt Meiku den Besitzer auf UID/GID 10001, sofern Docker CHOWN erlaubt.
+        Persistent data is stored on the ZimaOS host at /DATA/AppData/ish_meiku/data and mounted into the container at /data. On startup Meiku fixes the directory owner to UID/GID 10001 when Docker permits CHOWN.
 
 
-        Veroeffentliche die WebUI ueber HTTPS, wenn PWA, Web Crypto, Service Worker und Passkeys vollstaendig funktionieren sollen.
+        Publish the WebUI through HTTPS if you want full PWA, Web Crypto, Service Worker and Passkey support.
       en_us: >
         Required: set ISHIKU_SETUP_SECRET to a long random value before
         starting. DV2_SHARED_SECRET remains supported as a legacy alias.

@@ -1,41 +1,41 @@
 # Meiku - Profile Share
 
-Self-hosted Profil- und Kontaktkarten-App fuer private und geschaeftliche QR-Karten.
+Self-hosted profile and contact card app for private and business QR cards.
 
-## Kurzbeschreibung
+## Short Description
 
-Meiku ist eine mobile-first PWA fuer verschluesselte private und geschaeftliche Profilkarten mit lokalen Kontakt-, PayPal- und SEPA/EPC-QR-Codes. Der Python-Server liefert die App aus und speichert nur einen verschluesselten Token; Klartextdaten bleiben im Browser.
+Meiku is a mobile-first PWA for encrypted private and business profile cards with local contact, PayPal and SEPA/EPC QR codes. The Python server serves the app and stores only an encrypted token; plaintext data stays in the browser.
 
-## Teil der ishiku-Familie
+## Part of the ishiku Family
 
-Meiku folgt dem gemeinsamen Pixel Soft Utility Designsystem fuer ruhige, abgerundete und self-hosted Utility-Oberflaechen. Die App nutzt dieselben sechs Themes wie die anderen ishiku Apps: Lavender, Mint, Sky, Amber, Rose und Graphite. System-, Hell- und Dunkelmodus werden ueber gemeinsame Theme-Tokens umgesetzt.
+Meiku follows the shared Pixel Soft Utility design system for calm, rounded and self-hosted utility interfaces. The app uses the same six themes as the other ishiku apps: Lavender, Mint, Sky, Amber, Rose and Graphite. System, light and dark modes are implemented through shared theme tokens.
 
-Die Oberflaeche verwendet den gemeinsamen AppHeader, lokale Logo-Assets, shared Design Tokens und technische Informationen nur im Settings-/Debug-Bereich. Meiku ist kein Server-Admin-System mit Benutzer-Datenbank; die Ersteinrichtung erstellt stattdessen einen clientseitig verschluesselten Profil-Tresor.
+The interface uses the shared AppHeader, local logo assets, shared design tokens and technical information only in the settings/debug area. Meiku is not a server admin system with a user database; first run creates a client-side encrypted profile vault instead.
 
-## Funktionen
+## Features
 
-- Setup, Login und Bearbeitung direkt in der PWA
+- Setup, login and editing directly in the PWA
 - Web Crypto API: AES-GCM-256 plus PBKDF2-SHA-256
-- PIN-Schnelllogin mit lokal verschluesseltem Master-Passwort
-- optionaler Passkey-/Biometrie-Schnelllogin via WebAuthn-PRF
-- Reiter: Privat, Firma, PayPal, Bank
-- gefuehrter Profil-Fortschritt fuer Privat, Geschaeftlich, PayPal und Bank
-- getrennte private und geschaeftliche Adresse
-- lokale QR-Erzeugung ohne Drittanbieter-API
-- getrennte vCard-QRs fuer Privat und Firma
-- PayPal-QR und GiroCode/EPC-QR mit synchronisiertem Betrag
-- Export/Import des verschluesselten Tokens
-- PWA-Manifest, Service Worker und Meiku-PWA-Icons
-- Python-API fuer Token-I/O mit `X-Auth-Token`
+- PIN quick login with locally encrypted master password
+- Optional passkey/biometric quick login through WebAuthn PRF
+- Tabs: Private, Company, PayPal, Bank
+- Guided profile progress for Private, Business, PayPal and Bank
+- Separate private and business addresses
+- Local QR generation without a third-party API
+- Separate vCard QRs for Private and Company
+- PayPal QR and GiroCode/EPC QR with synchronized amount
+- Export/import for the encrypted token
+- PWA manifest, service worker and Meiku PWA icons
+- Python API for token I/O with `X-Auth-Token`
 
 ## Tech Stack
 
-- Vanilla HTML, CSS und JavaScript als PWA
-- Web Crypto API fuer clientseitige Verschluesselung
-- eigener lokaler QR-Renderer ohne externe QR-API
-- Python `http.server`-basierter Runtime-Server
-- Docker/Compose fuer ZimaOS, CasaOS und andere self-hosted Setups
-- Pixel Soft Utility Codex Pack v4 fuer Design Tokens, Contracts und Checklisten
+- Vanilla HTML, CSS and JavaScript as a PWA
+- Web Crypto API for client-side encryption
+- Custom local QR renderer without an external QR API
+- Python `http.server`-based runtime server
+- Docker/Compose for ZimaOS, CasaOS and other self-hosted setups
+- Pixel Soft Utility Codex Pack v4 for design tokens, contracts and checklists
 
 ## Installation
 
@@ -47,84 +47,84 @@ cd meiku
 cp .env.example .env
 ```
 
-In `.env` mindestens ein langes Secret setzen:
+Set at least one long secret in `.env`:
 
 ```env
 WEBUI_PORT=8080
 TZ=Europe/Berlin
-ISHIKU_SETUP_SECRET=ein-langes-zufaelliges-secret
+ISHIKU_SETUP_SECRET=a-long-random-secret
 MEIKU_DATA_PATH=/DATA/AppData/meiku/data
 ```
 
-Datenordner auf dem Host vorbereiten:
+Prepare the data folder on the host:
 
 ```bash
 mkdir -p /DATA/AppData/meiku/data
 ```
 
-Beim Containerstart setzt der Meiku-Entrypoint den Besitzer des Datenordners auf `10001:10001`, sofern Docker `CHOWN` fuer den Bind-Mount erlaubt. Falls dein Host das nicht erlaubt, fuehre einmalig aus:
+On container startup, the Meiku entrypoint sets the data folder owner to `10001:10001` when Docker permits `CHOWN` for the bind mount. If your host does not allow this, run once:
 
 ```bash
 chown -R 10001:10001 /DATA/AppData/meiku/data
 ```
 
-Container starten:
+Start the container:
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
 
-### Erstes Starten
+### First Start
 
-Beim ersten Start zeigt Meiku die Tresor-Ersteinrichtung. Gib den Profilnamen, ein Master-Passwort und dasselbe Secret ein, das serverseitig als `ISHIKU_SETUP_SECRET`, `ISHIKU_SETUP_SECRET_FILE` oder Legacy-Variable `DV2_SHARED_SECRET` konfiguriert ist.
+On first start, Meiku shows the vault setup. Enter the profile name, a master password and the same secret configured server-side as `ISHIKU_SETUP_SECRET`, `ISHIKU_SETUP_SECRET_FILE` or the legacy variable `DV2_SHARED_SECRET`.
 
-### Adminaccount erstellen
+### Admin Account
 
-Meiku erstellt keinen Server-Adminaccount und speichert keine Benutzerpasswort-Hashes, weil die App ein clientseitig verschluesselter Profil-Tresor ist. Der Setup-Secret-Mechanismus schuetzt Schreibzugriffe auf den verschluesselten Token. Das Master-Passwort wird nicht an den Server gesendet.
+Meiku does not create a server admin account and does not store user password hashes because the app is a client-side encrypted profile vault. The setup secret mechanism protects write access to the encrypted token. The master password is never sent to the server.
 
-## Konfiguration
+## Configuration
 
-### Umgebungsvariablen
+### Environment Variables
 
-| Variable | Zweck |
+| Variable | Purpose |
 | --- | --- |
-| `WEBUI_PORT` | Host-Port fuer die Weboberflaeche, Standard `8080`. |
-| `TZ` | Zeitzone, Standard `Europe/Berlin`. |
-| `ISHIKU_DATA_DIR` | Persistenter Datenordner im Container, Standard `/data`. |
-| `ISHIKU_LOG_LEVEL` | Gemeinsamer Runtime-Loglevel, Standard `info`. |
-| `ISHIKU_SETUP_SECRET` | Bevorzugtes Secret fuer Setup und Token-Schreibzugriffe. |
-| `ISHIKU_SETUP_SECRET_FILE` | Optionaler Pfad zu einer Secret-Datei, bevorzugt vor Env-Secrets. |
-| `DV2_SHARED_SECRET` | Legacy-Alias fuer bestehende Installationen. |
-| `DV2_ACCESS_LOG` | Aktiviert einfache Access Logs mit `true`, `1` oder `yes`. |
-| `MEIKU_DATA_PATH` | Host-Bind-Mount fuer persistente Daten. |
+| `WEBUI_PORT` | Host port for the web interface, default `8080`. |
+| `TZ` | Time zone, default `Europe/Berlin`. |
+| `ISHIKU_DATA_DIR` | Persistent data folder in the container, default `/data`. |
+| `ISHIKU_LOG_LEVEL` | Shared runtime log level, default `info`. |
+| `ISHIKU_SETUP_SECRET` | Preferred secret for setup and token write access. |
+| `ISHIKU_SETUP_SECRET_FILE` | Optional path to a secret file, preferred over environment secrets. |
+| `DV2_SHARED_SECRET` | Legacy alias for existing installations. |
+| `DV2_ACCESS_LOG` | Enables simple access logs with `true`, `1` or `yes`. |
+| `MEIKU_DATA_PATH` | Host bind mount for persistent data. |
 
 ### Docker Secrets
 
-Wenn eine Secret-Datei genutzt wird, liest der Server zuerst `ISHIKU_SETUP_SECRET_FILE`. Ohne explizite Variable prueft er `/run/secrets/ishiku_setup_secret`. Wenn keine Datei vorhanden ist, faellt er auf `ISHIKU_SETUP_SECRET` und danach auf `DV2_SHARED_SECRET` zurueck.
+When a secret file is used, the server reads `ISHIKU_SETUP_SECRET_FILE` first. Without an explicit variable, it checks `/run/secrets/ishiku_setup_secret`. If no file exists, it falls back to `ISHIKU_SETUP_SECRET` and then `DV2_SHARED_SECRET`.
 
-Secret-Werte werden nicht geloggt und nicht an Client-JavaScript ausgeliefert.
+Secret values are not logged and are not delivered to client-side JavaScript.
 
-### Persistente Daten
+### Persistent Data
 
-Im Container liegt der verschluesselte Token standardmaessig unter `/data/data.json`. Auf ZimaOS empfiehlt sich:
+Inside the container, the encrypted token is stored at `/data/data.json` by default. On ZimaOS, this path is recommended:
 
 ```text
 /DATA/AppData/meiku/data
 ```
 
-## Sicherheit
+## Security
 
-- Klartextdaten verlassen den Browser nicht.
-- Das Master-Passwort wird nicht an den Server gesendet.
-- Der Server speichert nur den AES-GCM-Token.
-- Setup-/Shared Secret ist nur fuer Schreibzugriffe auf den verschluesselten Token gedacht.
-- Meiku speichert keine Plaintext-Passwoerter und keine reversibel verschluesselten Server-Passwoerter.
-- Eine oeffentliche Server-Registrierung existiert nicht.
-- `data.json`, `/api/data`, `/api/token` und `save.php` werden vom Service Worker nicht gecacht.
-- Der Container startet kurz mit Root-Rechten, korrigiert bei Bedarf den `/data`-Bind-Mount und laeuft danach als UID/GID `10001:10001`, read-only, mit `/data`-Bind-Mount und `/tmp`-Tmpfs.
+- Plaintext data never leaves the browser.
+- The master password is never sent to the server.
+- The server stores only the AES-GCM token.
+- The setup/shared secret is only intended for write access to the encrypted token.
+- Meiku stores no plaintext passwords and no reversibly encrypted server passwords.
+- There is no public server registration.
+- `data.json`, `/api/data`, `/api/token` and `save.php` are not cached by the service worker.
+- The container starts briefly with root privileges, fixes the `/data` bind mount when needed and then runs as UID/GID `10001:10001`, read-only, with a `/data` bind mount and `/tmp` tmpfs.
 
-## Updates und Backup
+## Updates and Backup
 
 Updates:
 
@@ -135,45 +135,45 @@ docker compose up -d
 
 Backup:
 
-- Host-Ordner `MEIKU_DATA_PATH` sichern.
-- Optional in der App den verschluesselten Token exportieren.
-- Master-Passwort und serverseitiges Secret getrennt und sicher aufbewahren.
+- Back up the host folder configured through `MEIKU_DATA_PATH`.
+- Optionally export the encrypted token in the app.
+- Store the master password and server-side secret separately and securely.
 
-## Entwicklung
+## Development
 
-Lokaler Start:
+Local start:
 
 ```bash
 ISHIKU_SETUP_SECRET=dev-secret DV2_DATA_FILE=./data/data.json python server.py --host 127.0.0.1 --port 8080
 ```
 
-Healthchecks:
+Health checks:
 
 ```text
 GET /healthz
 GET /readyz
 ```
 
-Token-Endpunkte:
+Token endpoints:
 
 ```text
 GET /api/data
 POST /api/token
 ```
 
-Legacy-Endpunkte bleiben kompatibel:
+Legacy endpoints remain compatible:
 
 ```text
 GET /data.json
 POST /save.php
 ```
 
-## Erstellt mit ChatGPT Codex
+## Created with ChatGPT Codex
 
-Dieses Projekt wurde mit Unterstuetzung von ChatGPT Codex umgesetzt und ueberarbeitet. Codex ist ein Entwicklungswerkzeug; Wartung, Betrieb und Verantwortung liegen beim Repository-Eigentuemer.
+This project was implemented and refined with support from ChatGPT Codex. Codex is a development tool; maintenance, operation and responsibility remain with the repository owner.
 
-## Status und Lizenz
+## Status and License
 
-Status: aktiv in Entwicklung.
+Status: actively in development.
 
-Lizenz: noch nicht angegeben.
+License: not specified yet.

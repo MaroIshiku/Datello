@@ -2,7 +2,7 @@
   "name": "Meiku - Profile Share",
   "short_name": "Meiku",
   "id": "./index.html?v=meiku-20260629",
-  "description": "Profile Share fuer lokale Kontakt- und Zahlungs-QRs.",
+  "description": "Profile Share for local contact and payment QRs.",
   "start_url": "./index.html?v=meiku-20260629",
   "scope": "./",
   "display": "standalone",

@@ -6,7 +6,7 @@ export const Store = {
   async loadData() {
     try {
       const response = await fetchWithFallback(['api/data', 'data.json'], { cache: 'no-store' });
-      if (!response.ok) throw new Error(`Token-Laden HTTP ${response.status}`);
+      if (!response.ok) throw new Error(`Token load HTTP ${response.status}`);
       const data = await response.json();
       return { token: data.token || '', updated: data.updated || null };
     } catch (error) {
@@ -20,9 +20,9 @@ export const Store = {
 
   async saveToken(token) {
     const secret = Store.getSecret();
-    if (!secret) throw new Error('Server-Secret fehlt. Öffne die Einstellungen und hinterlege es.');
+    if (!secret) throw new Error('Server secret is missing. Open settings and save it.');
     if (typeof token !== 'string' || token.length < MIN_TOKEN_LENGTH || !TOKEN_RE.test(token)) {
-      throw new Error('Token fehlt oder ist ungültig.');
+      throw new Error('Token is missing or invalid.');
     }
     const options = {
       method: 'POST',
@@ -34,7 +34,7 @@ export const Store = {
     const text = await response.text();
     let data = {};
     try { data = text ? JSON.parse(text) : {}; } catch { data = { error: text }; }
-    if (!response.ok || data.ok === false) throw new Error(data.error || `Speichern fehlgeschlagen (${response.status}).`);
+    if (!response.ok || data.ok === false) throw new Error(data.error || `Save failed (${response.status}).`);
     return { token, updated: data.updated || new Date().toISOString() };
   },
 
@@ -54,17 +54,17 @@ export const Store = {
   importToken(file) {
     return new Promise((resolve, reject) => {
       if (!file || file.size > MAX_IMPORT_BYTES) {
-        reject(new Error('Token-Datei ist zu groß oder ungültig.'));
+        reject(new Error('Token file is too large or invalid.'));
         return;
       }
       const reader = new FileReader();
-      reader.onerror = () => reject(new Error('Datei konnte nicht gelesen werden.'));
+      reader.onerror = () => reject(new Error('File could not be read.'));
       reader.onload = () => {
         try {
           const parsed = JSON.parse(String(reader.result));
           const token = String(parsed.token || '');
           if (token.length < MIN_TOKEN_LENGTH || !TOKEN_RE.test(token)) {
-            throw new Error('Import enthält keinen gültigen Token.');
+            throw new Error('Import does not contain a valid token.');
           }
           resolve({ token, updated: parsed.updated || null });
         } catch (error) { reject(error); }
@@ -85,5 +85,5 @@ async function fetchWithFallback(urls, options) {
       lastError = error;
     }
   }
-  throw lastError || new Error('Server nicht erreichbar.');
+  throw lastError || new Error('Server is not reachable.');
 }

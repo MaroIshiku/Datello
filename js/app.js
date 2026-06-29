@@ -4,19 +4,19 @@ import { formatIban, formatIbanRaw, normalizeAmount, QrPayload, renderQr } from 
 import { Store } from './store.js?v=meiku-20260629';
 
 const FIELDS = [
-  ['n', 'Vollständiger Name', 'text', true], ['m', 'Privat-Handy', 'tel'], ['e1', 'Privat-E-Mail', 'email'],
-  ['s', 'Privat-Straße / Hausnummer', 'text'], ['z', 'Privat-PLZ / Stadt', 'text'],
-  ['c', 'Firma', 'text'], ['j', 'Position / Jobtitel', 'text'], ['cp', 'Büro-Telefon', 'tel'], ['cm', 'Dienst-Handy', 'tel'], ['ce', 'Firmen-E-Mail', 'email'],
-  ['w', 'Webseite', 'text'], ['cs', 'Geschäftsstraße / Hausnummer', 'text'], ['cz', 'Geschäfts-PLZ / Stadt', 'text'], ['pp', 'PayPal-Nutzername', 'text'],
+  ['n', 'Full Name', 'text', true], ['m', 'Private Mobile', 'tel'], ['e1', 'Private Email', 'email'],
+  ['s', 'Private Street / Number', 'text'], ['z', 'Private ZIP / City', 'text'],
+  ['c', 'Company', 'text'], ['j', 'Position / Job Title', 'text'], ['cp', 'Office Phone', 'tel'], ['cm', 'Work Mobile', 'tel'], ['ce', 'Work Email', 'email'],
+  ['w', 'Website', 'text'], ['cs', 'Business Street / Number', 'text'], ['cz', 'Business ZIP / City', 'text'], ['pp', 'PayPal Username', 'text'],
   ['ib', 'IBAN', 'text'], ['bic', 'BIC', 'text']
 ];
-const SETUP_FIELDS = [['n', 'Vollständiger Name', 'text', true]];
+const SETUP_FIELDS = [['n', 'Full Name', 'text', true]];
 const FIELD_LABELS = Object.fromEntries(FIELDS.map(([key, label]) => [key, label]));
 const PROFILE_STEPS = [
-  { id: 'privat', title: 'Privat', hint: 'Name, private Kontaktdaten und private Adresse.', fields: ['n', 'm', 'e1', 's', 'z'] },
-  { id: 'firma', title: 'Geschäftlich', hint: 'Firma, berufliche Kontakte und separate Geschäftsadresse.', fields: ['c', 'j', 'cp', 'cm', 'ce', 'w', 'cs', 'cz'] },
-  { id: 'paypal', title: 'PayPal', hint: 'paypal.me Nutzername für Zahlungslinks.', fields: ['pp'] },
-  { id: 'bank', title: 'Bank', hint: 'SEPA-Daten für GiroCode / EPC-QR.', fields: ['ib', 'bic'] }
+  { id: 'privat', title: 'Private', hint: 'Name, private contact details and private address.', fields: ['n', 'm', 'e1', 's', 'z'] },
+  { id: 'firma', title: 'Business', hint: 'Company, work contact details and separate business address.', fields: ['c', 'j', 'cp', 'cm', 'ce', 'w', 'cs', 'cz'] },
+  { id: 'paypal', title: 'PayPal', hint: 'paypal.me username for payment links.', fields: ['pp'] },
+  { id: 'bank', title: 'Bank', hint: 'SEPA details for GiroCode / EPC QR.', fields: ['ib', 'bic'] }
 ];
 const AMOUNTS = ['5', '10', '20', '50', '100'];
 const APP_NAME = 'Meiku';
@@ -92,15 +92,15 @@ function bindAuth() {
     const show = input.type === 'password';
     input.type = show ? 'text' : 'password';
     toggle.setAttribute('aria-pressed', String(show));
-    toggle.setAttribute('aria-label', show ? 'Master-Passwort verbergen' : 'Master-Passwort anzeigen');
+    toggle.setAttribute('aria-label', show ? 'Hide master password' : 'Show master password');
   });
   $('#setupForm').addEventListener('submit', async event => {
     event.preventDefault();
     const data = collectForm(event.currentTarget);
-    if (!data.n) return toast('Name ist Pflicht.');
+    if (!data.n) return toast('Name is required.');
     const password = $('#setupPassword').value;
     const secret = $('#setupSecret').value;
-    if (password.length < 8) return toast('Passwort muss mindestens 8 Zeichen haben.');
+    if (password.length < 8) return toast('Password must be at least 8 characters.');
     Store.setSecret(secret);
     try {
       const token = await encryptJson(normalizeData(data), password);
@@ -108,7 +108,7 @@ function bindAuth() {
       Object.assign(state, { token: saved.token, updated: saved.updated, data: normalizeData(data), masterPassword: password });
       showVault();
       openProfileProgress(0, true);
-      toast('Tresor gespeichert.');
+      toast('Vault saved.');
     } catch (error) { toast(error.message); }
   });
   $('#pinOpen').addEventListener('click', () => openPinPad(async pin => {
@@ -143,8 +143,8 @@ function showSetup(offlineError) {
   document.body.dataset.authMode = 'setup';
   $('#authScreen').classList.remove('hidden');
   $('#vaultScreen').classList.add('hidden');
-  $('#authTitle').textContent = 'Ersteinrichtung';
-  $('#authHint').textContent = offlineError ? 'Token konnte nicht geladen werden. Du kannst trotzdem lokal starten und später speichern.' : 'Lege nur den Tresor an. Dein Profil füllst du danach Schritt für Schritt aus.';
+  $('#authTitle').textContent = 'Setup';
+  $('#authHint').textContent = offlineError ? 'Token could not be loaded. You can still start locally and save later.' : 'Create the vault first. You can complete your profile step by step afterwards.';
   $('#setupForm').classList.remove('hidden');
   $('#passwordLogin').classList.add('hidden');
   $('#quickUnlock').classList.add('hidden');
@@ -155,8 +155,8 @@ function showLogin() {
   document.body.dataset.authMode = 'login';
   $('#authScreen').classList.remove('hidden');
   $('#vaultScreen').classList.add('hidden');
-  $('#authTitle').textContent = 'Willkommen zurück';
-  $('#authHint').textContent = 'Entsperre deinen Kontakt- & Zahlungs-Tresor.';
+  $('#authTitle').textContent = 'Welcome back';
+  $('#authHint').textContent = 'Unlock your contact and payment vault.';
   $('#setupForm').classList.add('hidden');
   $('#passwordLogin').classList.remove('hidden');
   $('#quickUnlock').classList.toggle('hidden', !(Auth.hasPin() || Auth.hasPasskey()));
@@ -172,7 +172,7 @@ async function unlockWithPassword(password) {
     showVault();
   } catch (error) {
     console.error(error);
-    toast('Passwort/PIN falsch oder Token beschädigt.');
+    toast('Password/PIN is wrong or the token is corrupted.');
   }
 }
 
@@ -186,9 +186,9 @@ function showVault() {
 }
 
 function updateVaultHeader() {
-  $('#heroName').textContent = state.data.n || 'Ohne Name';
+  $('#heroName').textContent = state.data.n || 'No Name';
   $('#heroInitials').textContent = initials(state.data.n);
-  $('#updatedAt').textContent = state.updated ? `Aktualisiert ${formatDate(state.updated)}` : 'Noch nicht gespeichert';
+  $('#updatedAt').textContent = state.updated ? `Updated ${formatDate(state.updated)}` : 'Not saved yet';
   updateAvatar();
 }
 
@@ -203,10 +203,10 @@ function renderTab() {
   const root = $('#tabContent');
   if (!state.data) return;
   if (state.activeTab === 'firma') {
-    renderContactTab(root, 'Firma', 'Geschäftliche Kontaktdaten.', companyRows(), QrPayload.vcardCompany(state.data), 'vCard Firma');
+    renderContactTab(root, 'Company', 'Business contact details.', companyRows(), QrPayload.vcardCompany(state.data), 'Company vCard');
     return;
   }
-  if (state.activeTab === 'privat') renderContactTab(root, 'Privat', 'Telefon, Mail und Adresse.', privateRows(), QrPayload.vcard(state.data), 'vCard privat');
+  if (state.activeTab === 'privat') renderContactTab(root, 'Private', 'Phone, email and address.', privateRows(), QrPayload.vcard(state.data), 'Private vCard');
   if (state.activeTab === 'paypal') renderPaymentTab(root, 'paypal');
   if (state.activeTab === 'bank') renderPaymentTab(root, 'bank');
 }
@@ -217,7 +217,7 @@ function renderContactTab(root, title, subtitle, rows, qrPayload, qrLabel) {
   const list = document.createElement('div');
   list.className = 'contact-list';
   const usableRows = rows.filter(row => row.value);
-  if (!usableRows.length) list.innerHTML = '<div class="empty">Noch keine Daten hinterlegt.</div>';
+  if (!usableRows.length) list.innerHTML = '<div class="empty">No data yet.</div>';
   for (const row of usableRows) list.append(contactRow(row));
   root.append(list);
   if (qrPayload) root.append(qrCard(qrPayload, qrLabel));
@@ -229,17 +229,17 @@ function renderPaymentTab(root, kind) {
   const title = isPayPal ? 'PayPal' : 'Bank';
   const payload = isPayPal ? QrPayload.paypal(state.data, state.amount) : QrPayload.girocode(state.data, state.amount, state.purpose);
   const link = QrPayload.paypal(state.data, state.amount);
-  root.innerHTML = `<div class="panel-head"><div><h2>${title}</h2><p>${isPayPal ? 'paypal.me Zahlungslink.' : 'SEPA GiroCode / EPC-QR.'}</p></div></div>`;
+  root.innerHTML = `<div class="panel-head"><div><h2>${title}</h2><p>${isPayPal ? 'paypal.me payment link.' : 'SEPA GiroCode / EPC QR.'}</p></div></div>`;
   const box = document.createElement('div');
   box.className = 'amount-card';
   box.innerHTML = `
-    <label class="field"><span>Betrag</span><input id="amountInput" inputmode="decimal" autocomplete="off" value="${esc(state.amount)}" placeholder="z. B. 12,50"></label>
+    <label class="field"><span>Amount</span><input id="amountInput" inputmode="decimal" autocomplete="off" value="${esc(state.amount)}" placeholder="e.g. 12.50"></label>
     <div class="chips">${AMOUNTS.map(v => `<button class="chip ${normalizeAmount(state.amount) === Number(v).toFixed(2) ? 'active' : ''}" data-amount="${v}" type="button">${v} €</button>`).join('')}</div>
-    <label class="field"><span>Verwendungszweck</span><input id="purposeInput" autocomplete="off" value="${esc(state.purpose)}" placeholder="Optional"></label>`;
+    <label class="field"><span>Payment reference</span><input id="purposeInput" autocomplete="off" value="${esc(state.purpose)}" placeholder="Optional"></label>`;
   root.append(box);
   const info = document.createElement('div');
   info.className = 'qr-caption';
-  const qrWrap = qrCard(payload, isPayPal ? 'PayPal.me Link' : 'SEPA / EPC QR-Code', info);
+  const qrWrap = qrCard(payload, isPayPal ? 'PayPal.me Link' : 'SEPA / EPC QR Code', info);
   root.append(qrWrap);
   const refreshPreview = () => updatePaymentPreview(kind, box, qrWrap, info);
   $('#amountInput', box).addEventListener('input', e => {
@@ -270,8 +270,8 @@ function updatePaymentPreview(kind, box, qrWrap, info) {
   target.dataset.payload = payload;
   renderQr(target, payload, qrRenderOptions(false, 512));
   info.innerHTML = isPayPal
-    ? `<b>Empfänger:</b> ${esc(state.data.n || '—')}<br><span class="link-line">${esc(link)}</span>`
-    : `<b>Empfänger:</b> ${esc(state.data.n || '—')}<br><b>IBAN:</b> ${esc(formatIban(state.data.ib))}<br><b>BIC:</b> ${esc((state.data.bic || '').toUpperCase())}`;
+    ? `<b>Recipient:</b> ${esc(state.data.n || '—')}<br><span class="link-line">${esc(link)}</span>`
+    : `<b>Recipient:</b> ${esc(state.data.n || '—')}<br><b>IBAN:</b> ${esc(formatIban(state.data.ib))}<br><b>BIC:</b> ${esc((state.data.bic || '').toUpperCase())}`;
 }
 
 function contactRow({ icon, label, value, href }) {
@@ -302,15 +302,15 @@ function qrCard(payload, label, extraNode) {
   const open = document.createElement('button');
   open.className = 'qr-icon-action qr-open-action';
   open.type = 'button';
-  open.setAttribute('aria-label', 'QR-Code öffnen');
-  open.title = 'QR-Code öffnen';
+  open.setAttribute('aria-label', 'Open QR code');
+  open.title = 'Open QR code';
   open.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h6v2H8.4l3.7 3.7-1.4 1.4L7 7.4V10H5V4Zm8 0h6v6h-2V7.4l-3.7 3.7-1.4-1.4L15.6 6H13V4ZM5 14h2v2.6l3.7-3.7 1.4 1.4L8.4 18H11v2H5v-6Zm12 0h2v6h-6v-2h2.6l-3.7-3.7 1.4-1.4 3.7 3.7V14Z"/></svg>';
   open.addEventListener('click', () => openQrOverlay(qr.dataset.payload || payload));
   const share = document.createElement('button');
   share.className = 'qr-icon-action qr-share-action';
   share.type = 'button';
-  share.setAttribute('aria-label', 'Daten teilen');
-  share.title = 'Daten teilen';
+  share.setAttribute('aria-label', 'Share data');
+  share.title = 'Share data';
   share.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.1c-1 0-1.9.5-2.4 1.2L8.9 13.7a3.2 3.2 0 0 0 0-3.4l6.7-3.6A3 3 0 1 0 15 5c0 .2 0 .4.1.6L8.3 9.2a3 3 0 1 0 0 5.6l6.8 3.6a3 3 0 1 0 2.9-2.3Z"/></svg>';
   share.addEventListener('click', shareCurrentTab);
   actions.append(open, share);
@@ -333,20 +333,20 @@ async function closeQrOverlay() {
 function privateRows() {
   const address = [state.data.s, state.data.z].filter(Boolean).join(', ');
   return [
-    { icon: '📱', label: 'Handy', value: state.data.m, href: state.data.m ? `tel:${state.data.m}` : '' },
+    { icon: '📱', label: 'Mobile', value: state.data.m, href: state.data.m ? `tel:${state.data.m}` : '' },
     { icon: '✉️', label: 'E-Mail', value: state.data.e1, href: state.data.e1 ? `mailto:${state.data.e1}` : '' },
-    { icon: '📍', label: 'Privatadresse', value: address, href: address ? `https://maps.google.com/?q=${encodeURIComponent([state.data.s, state.data.z].filter(Boolean).join(' '))}` : '' }
+    { icon: '📍', label: 'Private address', value: address, href: address ? `https://maps.google.com/?q=${encodeURIComponent([state.data.s, state.data.z].filter(Boolean).join(' '))}` : '' }
   ];
 }
 function companyRows() {
   const companyAddress = [state.data.cs, state.data.cz].filter(Boolean).join(', ');
   return [
-    { icon: '🏢', label: 'Firma', value: state.data.c }, { icon: '💼', label: 'Position', value: state.data.j },
-    { icon: '☎️', label: 'Büro', value: state.data.cp, href: state.data.cp ? `tel:${state.data.cp}` : '' },
-    { icon: '📲', label: 'Dienst-Handy', value: state.data.cm, href: state.data.cm ? `tel:${state.data.cm}` : '' },
-    { icon: '✉️', label: 'Firmen-E-Mail', value: state.data.ce, href: state.data.ce ? `mailto:${state.data.ce}` : '' },
-    { icon: '🌐', label: 'Webseite', value: state.data.w, href: state.data.w ? normalizeUrl(state.data.w) : '' },
-    { icon: '📍', label: 'Geschäftsadresse', value: companyAddress, href: companyAddress ? `https://maps.google.com/?q=${encodeURIComponent([state.data.cs, state.data.cz].filter(Boolean).join(' '))}` : '' }
+    { icon: '🏢', label: 'Company', value: state.data.c }, { icon: '💼', label: 'Position', value: state.data.j },
+    { icon: '☎️', label: 'Office', value: state.data.cp, href: state.data.cp ? `tel:${state.data.cp}` : '' },
+    { icon: '📲', label: 'Work Mobile', value: state.data.cm, href: state.data.cm ? `tel:${state.data.cm}` : '' },
+    { icon: '✉️', label: 'Work Email', value: state.data.ce, href: state.data.ce ? `mailto:${state.data.ce}` : '' },
+    { icon: '🌐', label: 'Website', value: state.data.w, href: state.data.w ? normalizeUrl(state.data.w) : '' },
+    { icon: '📍', label: 'Business address', value: companyAddress, href: companyAddress ? `https://maps.google.com/?q=${encodeURIComponent([state.data.cs, state.data.cz].filter(Boolean).join(' '))}` : '' }
   ];
 }
 
@@ -361,16 +361,15 @@ function buildShareText() {
   const d = state.data;
   if (state.activeTab === 'paypal') {
     return [
-      `Empfaenger: ${d.n}`,
+      `Recipient: ${d.n}`,
       `PayPal: ${QrPayload.paypal(d, state.amount)}`,
-      normalizeAmount(state.amount) ? `Betrag: ${normalizeAmount(state.amount)} EUR` : '',
-      state.purpose ? `Verwendungszweck: ${state.purpose}` : ''
+      normalizeAmount(state.amount) ? `Amount: ${normalizeAmount(state.amount)} EUR` : '',
+      state.purpose ? `Payment reference: ${state.purpose}` : ''
     ].filter(Boolean).join('\n');
   }
   if (state.activeTab === 'privat') return [d.n, d.m, d.e1, [d.s, d.z].filter(Boolean).join(', ')].filter(Boolean).join('\n');
   if (state.activeTab === 'firma') return [d.n, d.c, d.j, d.cp, d.cm, d.ce, d.w, [d.cs, d.cz].filter(Boolean).join(', ')].filter(Boolean).join('\n');
-  if (state.activeTab === 'paypal') return [`Empfänger: ${d.n}`, `PayPal: ${QrPayload.paypal(d, state.amount)}`, normalizeAmount(state.amount) ? `Betrag: ${normalizeAmount(state.amount)} €` : ''].filter(Boolean).join('\n');
-  return [`Empfänger: ${d.n}`, `IBAN: ${formatIban(d.ib)}`, `BIC: ${(d.bic || '').toUpperCase()}`, normalizeAmount(state.amount) ? `Betrag: ${normalizeAmount(state.amount)} €` : '', state.purpose ? `Verwendungszweck: ${state.purpose}` : ''].filter(Boolean).join('\n');
+  return [`Recipient: ${d.n}`, `IBAN: ${formatIban(d.ib)}`, `BIC: ${(d.bic || '').toUpperCase()}`, normalizeAmount(state.amount) ? `Amount: ${normalizeAmount(state.amount)} EUR` : '', state.purpose ? `Payment reference: ${state.purpose}` : ''].filter(Boolean).join('\n');
 }
 
 function openSettings() {
@@ -379,51 +378,51 @@ function openSettings() {
     ? `<img src="${esc(avatar)}" alt="">`
     : `<span>${esc(initials(state.data?.n))}</span>`;
   openSheet(APP_NAME, `
-    <button class="profile-close" type="button" data-close-sheet aria-label="Menü schließen">×</button>
+    <button class="profile-close" type="button" data-close-sheet aria-label="Close menu">×</button>
     <div class="profile-menu-content">
       <section class="profile-card">
-        <button class="avatar-wrap profile-avatar" type="button" data-action="avatar-pick" aria-label="Profilbild ändern">
+        <button class="avatar-wrap profile-avatar" type="button" data-action="avatar-pick" aria-label="Change profile picture">
           ${avatarNode}
           <span class="avatar-camera" aria-hidden="true">📷</span>
         </button>
         <div class="profile-card-main">
-          <h3>${esc(state.data?.n || `${APP_NAME} Profil`)}</h3>
-          <p>${esc(state.data?.e1 || state.data?.ce || 'Lokaler Kontakt- und Zahlungs-Tresor')}</p>
+          <h3>${esc(state.data?.n || `${APP_NAME} Profile`)}</h3>
+          <p>${esc(state.data?.e1 || state.data?.ce || 'Local contact and payment vault')}</p>
         </div>
         <input id="avatarFile" type="file" accept="image/*" hidden>
       </section>
 
-      <section class="profile-info-card" aria-label="Tresorstatus">
-        <div><b>Tresor</b><span>Ende-zu-Ende verschlüsselt</span></div>
-        <button class="debug-info-button" data-action="debug" type="button"><b>Debug</b><span>Build- und Repo-Informationen</span></button>
+      <section class="profile-info-card" aria-label="Vault status">
+        <div><b>Vault</b><span>End-to-end encrypted</span></div>
+        <button class="debug-info-button" data-action="debug" type="button"><b>Debug</b><span>Build and repository information</span></button>
       </section>
 
       <div class="profile-actions">
-        ${profileMenuRow('📝', 'Daten bearbeiten', 'Kontakt- und Zahlungsdaten Schritt für Schritt pflegen', 'edit')}
-        ${profileMenuRow('🖼️', 'Profilbild wählen', 'Automatisch zuschneiden und lokal speichern', 'avatar-pick')}
-        ${avatar ? profileMenuRow('🧹', 'Profilbild entfernen', 'Lokales Profilbild von diesem Gerät löschen', 'avatar-remove') : ''}
-        ${profileMenuRow('🔐', 'Master-Passwort', 'Tresor neu verschlüsseln', 'password')}
-        ${profileMenuRow('🔢', 'PIN', 'Schnell-Login auf diesem Gerät einrichten', 'pin')}
-        ${profileMenuRow('🔑', 'Passkey / Biometrie', 'Nur wenn Chrome einen PRF-Schlüssel liefert', 'passkey')}
+        ${profileMenuRow('📝', 'Edit data', 'Maintain contact and payment details step by step', 'edit')}
+        ${profileMenuRow('🖼️', 'Choose profile picture', 'Crop automatically and store locally', 'avatar-pick')}
+        ${avatar ? profileMenuRow('🧹', 'Remove profile picture', 'Delete the local profile picture from this device', 'avatar-remove') : ''}
+        ${profileMenuRow('🔐', 'Master Password', 'Re-encrypt vault', 'password')}
+        ${profileMenuRow('🔢', 'PIN', 'Set up quick login on this device', 'pin')}
+        ${profileMenuRow('🔑', 'Passkey / Biometrics', 'Only when Chrome provides a PRF key', 'passkey')}
       </div>
 
       <section class="settings-section compact-settings">
-        <h3>Darstellung</h3>
+        <h3>Appearance</h3>
         <div class="option-grid">${THEMES.map(t => `<button class="btn small tonal" data-theme-pick="${t}">${labelTheme(t)}</button>`).join('')}</div>
         <div class="option-grid">${MODES.map(m => `<button class="btn small tonal" data-mode-pick="${m}">${labelMode(m)}</button>`).join('')}</div>
       </section>
 
       <section class="settings-section compact-settings">
         <h3>Backup & Server</h3>
-        <button class="profile-row-button" data-action="export" type="button"><span>⬇️</span><b>Token exportieren</b></button>
-        <label class="profile-row-button"><span>⬆️</span><b>Token importieren</b><input id="importFile" type="file" accept="application/json,.json,.txt" hidden></label>
-        <label class="field"><span>Shared Secret</span><input id="secretInput" type="password" value="${esc(Store.getSecret())}"></label>
-        <button class="btn tonal" data-action="secret" type="button">Secret speichern</button>
+        <button class="profile-row-button" data-action="export" type="button"><span>⬇️</span><b>Export Token</b></button>
+        <label class="profile-row-button"><span>⬆️</span><b>Import Token</b><input id="importFile" type="file" accept="application/json,.json,.txt" hidden></label>
+        <label class="field"><span>Server Secret</span><input id="secretInput" type="password" value="${esc(Store.getSecret())}"></label>
+        <button class="btn tonal" data-action="secret" type="button">Save Secret</button>
       </section>
 
       <section class="profile-actions session-actions">
-        ${profileMenuRow('⏻', 'Tresor sperren', 'Zur Entsperrung zurückkehren', 'lock')}
-        ${profileMenuRow('↪', 'Abmelden', 'Secret und Schnell-Logins lokal entfernen', 'logout')}
+        ${profileMenuRow('⏻', 'Lock Vault', 'Return to unlock', 'lock')}
+        ${profileMenuRow('↪', 'Sign Out', 'Remove secret and quick logins locally', 'logout')}
       </section>
     </div>`);
   $('#sheet').classList.add('profile-menu');
@@ -453,11 +452,11 @@ async function settingsClick(e) {
   if (action === 'pin') openPinSetup(false);
   if (action === 'debug') openDebugInfo();
   if (action === 'passkey') setupPasskey();
-  if (action === 'export') { Store.exportToken({ token: state.token, updated: state.updated }); toast('Export gestartet.'); }
+  if (action === 'export') { Store.exportToken({ token: state.token, updated: state.updated }); toast('Export started.'); }
   if (action === 'lock') location.reload();
   if (action === 'logout') { Auth.clearPin(); Auth.clearPasskey(); localStorage.removeItem('dv2.sharedSecret'); location.reload(); }
-  if (action === 'avatar-remove') { localStorage.removeItem('dv2.avatar'); updateAvatar(); toast('Profilbild entfernt.'); }
-  if (action === 'secret') { Store.setSecret($('#secretInput').value); toast('Secret gespeichert.'); }
+  if (action === 'avatar-remove') { localStorage.removeItem('dv2.avatar'); updateAvatar(); toast('Profile picture removed.'); }
+  if (action === 'secret') { Store.setSecret($('#secretInput').value); toast('Secret saved.'); }
 }
 async function settingsChange(e) {
   if (e.target.id === 'avatarFile' && e.target.files[0]) {
@@ -472,7 +471,7 @@ async function settingsChange(e) {
     const imported = await Store.importToken(e.target.files[0]);
     const saved = await Store.saveToken(imported.token);
     state.token = saved.token; state.updated = saved.updated;
-    closeSheet(); showLogin(); toast('Token importiert. Bitte entsperren.');
+    closeSheet(); showLogin(); toast('Token imported. Please unlock.');
   } catch (error) { toast(error.message); }
 }
 
@@ -481,40 +480,40 @@ function openDebugInfo() {
   const forkRepos = Array.isArray(info.forkRepos) ? info.forkRepos : [];
   const rows = [
     ['App', info.app || APP_TITLE],
-    ['Build-SHA', shortSha(info.buildSha)],
-    ['Voller SHA', info.buildSha || 'local'],
-    ['Repo aktualisiert', formatDebugDate(info.repoUpdatedAt)],
-    ['Image gebaut', formatDebugDate(info.builtAt)],
-    ['Quelle', info.sourceRepo || 'MaroIshiku/meiku'],
+    ['Build SHA', shortSha(info.buildSha)],
+    ['Full SHA', info.buildSha || 'local'],
+    ['Repo updated', formatDebugDate(info.repoUpdatedAt)],
+    ['Image built', formatDebugDate(info.builtAt)],
+    ['Source', info.sourceRepo || 'MaroIshiku/meiku'],
     ['Ref', info.sourceRef || 'local'],
-    ['Workflow-Run', info.workflowRun || 'local'],
-    ['Fork-Repositories', forkRepos.length ? `${forkRepos.length} eingebunden` : 'Keine eingebunden']
+    ['Workflow Run', info.workflowRun || 'local'],
+    ['Fork repositories', forkRepos.length ? `${forkRepos.length} included` : 'None included']
   ];
-  openSheet('Debug-Informationen', `
+  openSheet('Debug Information', `
     <div class="debug-panel">
-      <p class="muted">Technische Informationen zum aktuell ausgelieferten Build.</p>
+      <p class="muted">Technical information about the currently delivered build.</p>
       <div class="debug-list">
         ${rows.map(([label, value]) => `<div><b>${esc(label)}</b><span>${esc(value)}</span></div>`).join('')}
       </div>
-      ${forkRepos.length ? `<div class="debug-list">${forkRepos.map(repo => `<div><b>${esc(repo.name || repo.repo || 'Repository')}</b><span>${esc(repo.version || repo.sha || 'unbekannt')}</span></div>`).join('')}</div>` : ''}
-      <button class="btn tonal" type="button" data-close-sheet>Schließen</button>
+      ${forkRepos.length ? `<div class="debug-list">${forkRepos.map(repo => `<div><b>${esc(repo.name || repo.repo || 'Repository')}</b><span>${esc(repo.version || repo.sha || 'unknown')}</span></div>`).join('')}</div>` : ''}
+      <button class="btn tonal" type="button" data-close-sheet>Close</button>
     </div>`);
   $('#sheetBody').onclick = e => { if (e.target.closest('[data-close-sheet]')) closeSheet(); };
 }
 
 async function openAvatarCrop(file) {
-  if (!file.type.startsWith('image/')) throw new Error('Bitte ein Bild auswählen.');
+  if (!file.type.startsWith('image/')) throw new Error('Please choose an image.');
   const image = await loadImageFromFile(file);
   const crop = { zoom: 1, x: 0, y: 0 };
-  openSheet('Profilbild zuschneiden', `
+  openSheet('Crop Profile Picture', `
     <form id="avatarCropForm" class="avatar-crop stack">
-      <canvas id="avatarPreview" width="280" height="280" aria-label="Profilbild Vorschau"></canvas>
+      <canvas id="avatarPreview" width="280" height="280" aria-label="Profile picture preview"></canvas>
       <label class="field"><span>Zoom</span><input id="avatarZoom" type="range" min="1" max="3" step="0.01" value="1"></label>
-      <label class="field"><span>Horizontal verschieben</span><input id="avatarX" type="range" min="-100" max="100" step="1" value="0"></label>
-      <label class="field"><span>Vertikal verschieben</span><input id="avatarY" type="range" min="-100" max="100" step="1" value="0"></label>
+      <label class="field"><span>Move horizontally</span><input id="avatarX" type="range" min="-100" max="100" step="1" value="0"></label>
+      <label class="field"><span>Move vertically</span><input id="avatarY" type="range" min="-100" max="100" step="1" value="0"></label>
       <div class="inline-actions">
-        <button class="btn tonal" type="button" data-close-sheet>Abbrechen</button>
-        <button class="btn primary" type="submit">Profilbild speichern</button>
+        <button class="btn tonal" type="button" data-close-sheet>Cancel</button>
+        <button class="btn primary" type="submit">Save Profile Picture</button>
       </div>
     </form>`);
 
@@ -530,7 +529,7 @@ async function openAvatarCrop(file) {
       saveAvatarCrop(image, crop);
       updateAvatar();
       closeSheet();
-      toast('Profilbild gespeichert.');
+      toast('Profile picture saved.');
     } catch (error) {
       toast(error.message);
     }
@@ -555,35 +554,35 @@ function openProfileProgress(stepIndex = 0, firstRun = false) {
     body.innerHTML = `
       <div class="progress-summary">
         <div>
-          <p class="eyebrow">Fortschritt</p>
-          <h3>${esc(filledFields)} von ${allStepFields.length} Feldern</h3>
-          <p class="muted">${firstRun ? 'Fülle dein Profil in getrennten Schritten aus. Alles bleibt optional und verschlüsselt.' : 'Bearbeite jeden Bereich getrennt. Änderungen werden verschlüsselt gespeichert.'}</p>
+          <p class="eyebrow">Progress</p>
+          <h3>${esc(filledFields)} of ${allStepFields.length} fields</h3>
+          <p class="muted">${firstRun ? 'Complete your profile in separate steps. Everything stays optional and encrypted.' : 'Edit each section separately. Changes are saved encrypted.'}</p>
         </div>
-        <div class="progress-ring" aria-label="${esc(filledFields)} von ${allStepFields.length} Feldern ausgefüllt">${esc(filledFields)}/${allStepFields.length}</div>
+        <div class="progress-ring" aria-label="${esc(filledFields)} of ${allStepFields.length} fields completed">${esc(filledFields)}/${allStepFields.length}</div>
       </div>
       <div class="progress-track" aria-hidden="true"><span class="progress-fill progress-fill-${index + 1}"></span></div>
-      <ol class="stepper" aria-label="Profilfortschritt">
+      <ol class="stepper" aria-label="Profile progress">
         ${PROFILE_STEPS.map((item, i) => {
           const status = stepCompletion(item, draft);
           const stateClass = i === index ? 'active' : i < index ? 'done' : '';
-          return `<li class="${stateClass}"><span>${status.done ? '✓' : i + 1}</span><div><b>${esc(item.title)}</b><small>${status.count}/${item.fields.length} Felder</small></div></li>`;
+          return `<li class="${stateClass}"><span>${status.done ? '✓' : i + 1}</span><div><b>${esc(item.title)}</b><small>${status.count}/${item.fields.length} fields</small></div></li>`;
         }).join('')}
       </ol>
       <form id="profileStepForm" class="stack">
         <div class="step-panel">
-          <p class="eyebrow">Schritt ${index + 1}</p>
+          <p class="eyebrow">Step ${index + 1}</p>
           <h3>${esc(step.title)}</h3>
           <p class="muted">${esc(step.hint)}</p>
           <div class="setup-grid" id="profileStepFields"></div>
         </div>
         <div class="progress-actions">
-          <button class="btn tonal" type="button" data-progress-back ${index === 0 ? 'disabled' : ''}>Zurück</button>
-          <button class="btn ghost" type="button" data-progress-close>${firstRun ? 'Später' : 'Schließen'}</button>
-          <button class="btn primary" type="submit">${index === PROFILE_STEPS.length - 1 ? 'Fertig' : 'Speichern & weiter'}</button>
+          <button class="btn tonal" type="button" data-progress-back ${index === 0 ? 'disabled' : ''}>Back</button>
+          <button class="btn ghost" type="button" data-progress-close>${firstRun ? 'Later' : 'Close'}</button>
+          <button class="btn primary" type="submit">${index === PROFILE_STEPS.length - 1 ? 'Done' : 'Save & Continue'}</button>
         </div>
       </form>`;
 
-    openSheet(firstRun ? 'Profil vervollständigen' : 'Daten bearbeiten', body);
+    openSheet(firstRun ? 'Complete Profile' : 'Edit data', body);
     renderSetupFields($('#profileStepFields'), draft, fieldDefs(step.fields));
 
     $('#profileStepForm').addEventListener('submit', async event => {
@@ -593,10 +592,10 @@ function openProfileProgress(stepIndex = 0, firstRun = false) {
         await saveCurrentData(draft, false);
         if (index === PROFILE_STEPS.length - 1) {
           closeSheet();
-          toast('Profil gespeichert.');
+          toast('Profile saved.');
         } else {
           index += 1;
-          toast('Gespeichert.');
+          toast('Saved.');
           render();
         }
       } catch (error) {
@@ -615,32 +614,32 @@ function openProfileProgress(stepIndex = 0, firstRun = false) {
 }
 
 function openPasswordSheet() {
-  openSheet('Passwort ändern', `<form id="passwordChange" class="stack"><label class="field"><span>Neues Master-Passwort</span><input id="newPassword" type="password" minlength="8" required></label><button class="btn primary" type="submit">Neu verschlüsseln</button></form>`);
+  openSheet('Change Password', `<form id="passwordChange" class="stack"><label class="field"><span>New Master Password</span><input id="newPassword" type="password" minlength="8" required></label><button class="btn primary" type="submit">Re-encrypt</button></form>`);
   $('#passwordChange').addEventListener('submit', async e => {
     e.preventDefault();
     const newPassword = $('#newPassword').value;
-    if (newPassword.length < 8) return toast('Passwort muss mindestens 8 Zeichen haben.');
+    if (newPassword.length < 8) return toast('Password must be at least 8 characters.');
     try {
       state.masterPassword = newPassword;
       await saveCurrentData(state.data);
       Auth.clearPin(); Auth.clearPasskey();
-      closeSheet(); toast('Passwort geändert. PIN/Passkey bitte neu einrichten.');
+      closeSheet(); toast('Password changed. Please set up PIN/passkey again.');
     } catch (error) { toast(error.message); }
   });
 }
 
 function openPinSetup(firstRun) {
-  openSheet('PIN einrichten', `<p class="muted">Die PIN verschlüsselt dein Master-Passwort lokal. Im Speicher liegt nur ein AES-GCM-Blob, kein Klartext-Passwort.</p><form id="pinSetupForm" class="stack"><label class="field"><span>Neue PIN (4–6 Ziffern)</span><input id="newPin" inputmode="numeric" pattern="\\d{4,6}" autocomplete="off" required></label><button class="btn primary" type="submit">PIN speichern</button>${firstRun ? '<button class="btn ghost" type="button" data-close-sheet>Später</button>' : ''}</form>`);
+  openSheet('Set Up PIN', `<p class="muted">The PIN encrypts your master password locally. Only an AES-GCM blob is stored, never the plaintext password.</p><form id="pinSetupForm" class="stack"><label class="field"><span>New PIN (4-6 digits)</span><input id="newPin" inputmode="numeric" pattern="\\d{4,6}" autocomplete="off" required></label><button class="btn primary" type="submit">Save PIN</button>${firstRun ? '<button class="btn ghost" type="button" data-close-sheet>Later</button>' : ''}</form>`);
   $('#pinSetupForm').addEventListener('submit', async e => {
     e.preventDefault();
-    try { await Auth.savePin($('#newPin').value, state.masterPassword); closeSheet(); toast('PIN gespeichert.'); }
+    try { await Auth.savePin($('#newPin').value, state.masterPassword); closeSheet(); toast('PIN saved.'); }
     catch (error) { toast(error.message); }
   });
   $$('[data-close-sheet]', $('#sheet')).forEach(n => n.addEventListener('click', closeSheet));
 }
 
 async function setupPasskey() {
-  try { await Auth.setupPasskey(state.masterPassword); toast('Passkey eingerichtet.'); }
+  try { await Auth.setupPasskey(state.masterPassword); toast('Passkey set up.'); }
   catch (error) { toast(error.message); }
 }
 
@@ -750,7 +749,7 @@ function loadImageFromFile(file) {
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Bild konnte nicht gelesen werden.')); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image could not be read.')); };
     img.src = url;
   });
 }
@@ -770,7 +769,7 @@ function saveAvatarCrop(image, crop) {
       lastError = error;
     }
   }
-  throw new Error(lastError?.name === 'QuotaExceededError' ? 'Profilbild ist trotz Verkleinerung zu groß für diesen Browser-Speicher.' : 'Profilbild konnte nicht gespeichert werden.');
+  throw new Error(lastError?.name === 'QuotaExceededError' ? 'Profile picture is still too large for this browser storage.' : 'Profile picture could not be saved.');
 }
 
 function drawAvatarCanvas(canvas, image, crop, size, quality = 0.84, final = false) {
@@ -818,7 +817,7 @@ function bindLongPress(node, callback) {
   node.addEventListener('pointerdown', () => timer = setTimeout(() => { callback(); vibrate(); }, 520));
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(e => node.addEventListener(e, () => clearTimeout(timer)));
 }
-async function copyText(text) { await navigator.clipboard.writeText(text); toast('Kopiert.'); }
+async function copyText(text) { await navigator.clipboard.writeText(text); toast('Copied.'); }
 function toast(message) { const el = $('#toast'); el.textContent = message; el.classList.remove('hidden'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.add('hidden'), 2600); }
 function vibrate() { if (navigator.vibrate) navigator.vibrate(8); }
 function applyTheme() {
@@ -844,14 +843,14 @@ function applyTheme() {
   localStorage.setItem(THEME_KEY, theme);
   localStorage.setItem(MODE_KEY, mode);
 }
-function initials(name = '') { return name.split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || 'DT'; }
+function initials(name = '') { return name.split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0]?.toUpperCase()).join('') || 'MK'; }
 function formatDate(value) { try { return new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)); } catch { return value; } }
-function formatDebugDate(value) { return value ? formatDate(value) : 'Nicht im lokalen Build gesetzt'; }
+function formatDebugDate(value) { return value ? formatDate(value) : 'Not set in local build'; }
 function shortSha(value) { return value && value !== 'local' ? `${value.slice(0, 12)}…` : 'local'; }
 async function loadBuildInfo() {
   try {
     const response = await fetch(`build-info.json?v=${Date.now()}`, { cache: 'no-store' });
-    if (!response.ok) throw new Error('Buildinfo nicht verfügbar.');
+    if (!response.ok) throw new Error('Build info is not available.');
     return await response.json();
   } catch {
     return { app: APP_TITLE, buildSha: 'local', repoUpdatedAt: null, builtAt: null, sourceRepo: 'MaroIshiku/meiku', sourceRef: 'local', workflowRun: null, forkRepos: [] };
@@ -865,7 +864,7 @@ function normalizeMode(mode) {
   return ({ auto: 'system', system: 'system', light: 'light', dark: 'dark' })[mode] || mode;
 }
 function labelTheme(t) { return ({ lavender: 'Lavender', mint: 'Mint', sky: 'Sky', amber: 'Amber', rose: 'Rose', graphite: 'Graphite' })[t] || t; }
-function labelMode(m) { return ({ system: 'System', light: 'Hell', dark: 'Dunkel' })[m] || m; }
+function labelMode(m) { return ({ system: 'System', light: 'Light', dark: 'Dark' })[m] || m; }
 function clamp(value, min, max) { return Math.min(max, Math.max(min, value)); }
 function cssVar(name) { return getComputedStyle(document.body).getPropertyValue(name).trim(); }
 function esc(value) { return String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[ch]); }

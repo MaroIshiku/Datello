@@ -35,7 +35,7 @@ function chooseVersion(dataBytes) {
     const needed = 4 + lengthInBits(version) + dataBytes.length * 8;
     if (needed <= bitLimit(version)) return version;
   }
-  throw new Error('QR-Daten sind zu lang.');
+  throw new Error('QR data is too long.');
 }
 
 class BitBuffer {

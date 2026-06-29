@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de" data-theme="lavender" data-mode="system" data-resolved-mode="light">
+<html lang="en" data-theme="lavender" data-mode="system" data-resolved-mode="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="css/meiku.css?v=meiku-20260629">
 </head>
 <body data-theme="lavender" data-mode="system">
-  <noscript>Diese App braucht JavaScript, weil Verschluesselung und QR-Codes komplett lokal laufen.</noscript>
+  <noscript>This app needs JavaScript because encryption and QR codes run locally.</noscript>
 
   <main id="app" class="app-shell" aria-live="polite">
     <section id="authScreen" class="auth-screen">
@@ -27,53 +27,53 @@
         </div>
         <p class="eyebrow auth-badge">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V8a3 3 0 0 0-6 0v2Zm3 4a2 2 0 0 0-1 3.73V19h2v-1.27A2 2 0 0 0 12 14Z"/></svg>
-          <span>Verschluesselter Tresor</span>
+          <span>Encrypted Vault</span>
         </p>
         <h1 id="authTitle">Meiku</h1>
-        <p id="authHint" class="muted">Lade verschluesselten Token...</p>
+        <p id="authHint" class="muted">Loading encrypted token...</p>
 
         <form id="passwordLogin" class="stack hidden" autocomplete="current-password">
           <label class="field auth-password-field">
-            <span>Master-Passwort</span>
+            <span>Master Password</span>
             <span class="password-shell">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V8a3 3 0 0 0-6 0v2Z"/></svg>
-              <input id="masterPassword" type="password" autocomplete="current-password" inputmode="text" placeholder="Master-Passwort eingeben" required>
-              <button id="masterPasswordToggle" class="password-toggle" type="button" aria-label="Master-Passwort anzeigen" aria-pressed="false">
+              <input id="masterPassword" type="password" autocomplete="current-password" inputmode="text" placeholder="Enter master password" required>
+              <button id="masterPasswordToggle" class="password-toggle" type="button" aria-label="Show master password" aria-pressed="false">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5 0 8.7 4.6 9.8 6.1a1.5 1.5 0 0 1 0 1.8C20.7 14.4 17 19 12 19s-8.7-4.6-9.8-6.1a1.5 1.5 0 0 1 0-1.8C3.3 9.6 7 5 12 5Zm0 3.1a3.9 3.9 0 1 0 0 7.8 3.9 3.9 0 0 0 0-7.8Zm0 2a1.9 1.9 0 1 1 0 3.8 1.9 1.9 0 0 1 0-3.8Z"/></svg>
               </button>
             </span>
           </label>
           <button class="btn primary unlock-btn" type="submit">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V8a3 3 0 0 0-6 0v2Z"/></svg>
-            <span>Entsperren</span>
+            <span>Unlock</span>
           </button>
         </form>
 
         <form id="setupForm" class="stack hidden" autocomplete="off">
           <div class="setup-grid" id="setupFields"></div>
           <label class="field">
-            <span>Neues Master-Passwort</span>
+            <span>New Master Password</span>
             <input id="setupPassword" type="password" autocomplete="new-password" minlength="8" required>
           </label>
           <label class="field">
-            <span>Server-Secret</span>
+            <span>Server Secret</span>
             <input id="setupSecret" type="password" autocomplete="off" required>
           </label>
-          <button class="btn primary" type="submit">Tresor anlegen und Profil starten</button>
+          <button class="btn primary" type="submit">Create Vault and Start Profile</button>
         </form>
 
         <div id="quickUnlock" class="quick-unlock hidden">
-          <button id="pinOpen" class="btn tonal pin-unlock-btn" type="button"><span aria-hidden="true">...</span>Mit PIN entsperren</button>
-          <button id="passkeyLogin" class="btn tonal" type="button">Mit Passkey entsperren</button>
+          <button id="pinOpen" class="btn tonal pin-unlock-btn" type="button"><span aria-hidden="true">...</span>Unlock with PIN</button>
+          <button id="passkeyLogin" class="btn tonal" type="button">Unlock with Passkey</button>
         </div>
 
         <div id="pinPad" class="pin-pad hidden" aria-label="PIN-Pad">
           <div class="pin-dots" id="pinDots" aria-hidden="true"></div>
           <div class="pin-grid"></div>
-          <button id="pinCancel" class="btn ghost" type="button">Abbrechen</button>
+          <button id="pinCancel" class="btn ghost" type="button">Cancel</button>
         </div>
       </div>
-      <p class="auth-footnote">Lokal und sicher auf diesem Geraet.</p>
+      <p class="auth-footnote">Local and secure on this device.</p>
     </section>
 
     <section id="vaultScreen" class="vault hidden">
@@ -86,31 +86,31 @@
           <span class="brand-text"><b>Meiku</b><small>Profile Share</small></span>
         </div>
         <div class="hero-actions">
-          <button id="settingsBtn" class="icon-btn" type="button" aria-label="Einstellungen oeffnen">
+          <button id="settingsBtn" class="icon-btn" type="button" aria-label="Open settings">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a7.7 7.7 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.7 7.7 0 0 0 7 6.5l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a7.7 7.7 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.7 7.7 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg>
           </button>
         </div>
         <div class="hero-content">
-          <button class="avatar-wrap avatar-button" id="heroAvatarWrap" type="button" aria-label="Profil und Einstellungen oeffnen"><img id="heroAvatar" alt="Profilbild" hidden><span id="heroInitials">MK</span></button>
+          <button class="avatar-wrap avatar-button" id="heroAvatarWrap" type="button" aria-label="Open profile and settings"><img id="heroAvatar" alt="Profile picture" hidden><span id="heroInitials">MK</span></button>
           <p class="eyebrow">Meiku</p>
           <h1 id="heroName">-</h1>
-          <p id="updatedAt" class="updated">Noch nicht gespeichert</p>
+          <p id="updatedAt" class="updated">Not saved yet</p>
         </div>
       </header>
 
       <section id="tabContent" class="content-card" tabindex="-1"></section>
 
-      <nav class="bottom-nav" aria-label="Hauptnavigation">
-        <button data-tab="privat" class="active" type="button"><span aria-hidden="true">P</span><b>Privat</b></button>
-        <button data-tab="firma" type="button"><span aria-hidden="true">F</span><b>Firma</b></button>
+      <nav class="bottom-nav" aria-label="Main navigation">
+        <button data-tab="privat" class="active" type="button"><span aria-hidden="true">P</span><b>Private</b></button>
+        <button data-tab="firma" type="button"><span aria-hidden="true">F</span><b>Company</b></button>
         <button data-tab="paypal" type="button"><span aria-hidden="true">€</span><b>PayPal</b></button>
         <button data-tab="bank" type="button"><span aria-hidden="true">B</span><b>Bank</b></button>
       </nav>
     </section>
   </main>
 
-  <div id="qrOverlay" class="qr-overlay hidden" role="dialog" aria-modal="true" aria-label="QR-Code Vollbild">
-    <button id="qrClose" class="icon-btn close" type="button" aria-label="QR-Code schliessen">x</button>
+  <div id="qrOverlay" class="qr-overlay hidden" role="dialog" aria-modal="true" aria-label="Fullscreen QR code">
+    <button id="qrClose" class="icon-btn close" type="button" aria-label="Close QR code">x</button>
     <div id="qrBig" class="qr-big"></div>
   </div>
 

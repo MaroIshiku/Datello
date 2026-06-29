@@ -3,7 +3,7 @@
   "app_id": "meiku",
   "app_name": "Meiku",
   "app_subtitle": "Profile Share",
-  "primary_purpose": "Teilt private und geschaeftliche Kontaktdaten mit lokalen Profil-, Kontakt- und Zahlungs-QR-Karten.",
+  "primary_purpose": "Shares private and business contact details with local profile, contact and payment QR cards.",
   "app_symbol": "badge",
   "app_logo": {
     "src": "assets/meiku-logo-20260629.png",
@@ -24,14 +24,14 @@
   "has_account": true,
   "user_identity_fields": ["avatar", "initials", "display_name", "email"],
   "main_sections": [
-    { "id": "privat", "label": "Privat", "icon": "account_circle" },
-    { "id": "firma", "label": "Firma", "icon": "badge" },
+    { "id": "privat", "label": "Private", "icon": "account_circle" },
+    { "id": "firma", "label": "Company", "icon": "badge" },
     { "id": "paypal", "label": "PayPal", "icon": "qr_code" },
     { "id": "bank", "label": "Bank", "icon": "qr_code" }
   ],
   "first_run_setup": {
     "enabled": false,
-    "reason": "Meiku ist kein Server-Account-System mit Admin-Datenbank. Die Ersteinrichtung erstellt einen lokal verschluesselten Profil-Tresor; der Server speichert nur den verschluesselten Token.",
+    "reason": "Meiku is not a server account system with an admin database. First run creates a locally encrypted profile vault; the server stores only the encrypted token.",
     "require_setup_secret": true,
     "setup_secret_file_env": "ISHIKU_SETUP_SECRET_FILE",
     "setup_secret_env": "ISHIKU_SETUP_SECRET",
@@ -46,7 +46,7 @@
     "repository_name": "meiku",
     "github_owner": "MaroIshiku",
     "public_repository": true,
-    "short_description": "Meiku ist eine self-hosted Profil- und Kontaktkarten-App im Pixel Soft Utility Designsystem.",
+    "short_description": "Meiku is a self-hosted profile and contact card app in the Pixel Soft Utility design system.",
     "docker_image": "ghcr.io/maroishiku/meiku:latest",
     "codex_notice_enabled": true
   }
